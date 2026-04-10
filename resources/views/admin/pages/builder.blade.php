@@ -2047,47 +2047,22 @@ function loadWidgetTab(widget, tab) {
                     {text: 'Secure Payment'},
                     {text: 'Easy Returns'}
                 ];
-                html = `
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
-                            <input type="color" class="w-full h-10 rounded-lg border cursor-pointer" value="${widget.settings.background || '#f9fafb'}" onchange="updateWidgetSetting('background', this.value)">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Trust Badge Items</label>
-                            <div class="space-y-2" id="badge-items-editor">
-                                ${badgeItems.map((item, idx) => `
-                                    <div class="flex gap-2 items-center">
-                                        <input type="text" class="flex-1 px-3 py-2 border rounded-lg" value="${item.text || ''}" placeholder="Badge text" onchange="updateBadgeItem(${idx}, 'text', this.value)">
-                                        <button type="button" onclick="removeBadgeItem(${idx})" class="text-red-500 hover:text-red-700 p-2">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        </button>
-                                    </div>
-                                `).join('')}
-                            </div>
-                            <button type="button" onclick="addBadgeItem()" class="mt-2 text-sm text-rose-500 hover:text-rose-600">+ Add Badge</button>
-                        </div>
-                    </div>
-                    <script>
-                        function updateBadgeItem(index, key, value) {
-                            const items = widget.settings.items || [];
-                            if (!items[index]) items[index] = {};
-                            items[index][key] = value;
-                            widget.settings.items = items;
-                        }
-                        function addBadgeItem() {
-                            const items = widget.settings.items || [];
-                            items.push({text: ''});
-                            widget.settings.items = items;
-                            renderWidgetSettings();
-                        }
-                        function removeBadgeItem(index) {
-                            const items = widget.settings.items || [];
-                            items.splice(index, 1);
-                            widget.settings.items = items;
-                            renderWidgetSettings();
-                        }
-                    </script>`;
+                let badgeItemsHtml = '';
+                badgeItems.forEach((item, idx) => {
+                    badgeItemsHtml += '<div class="flex gap-2 items-center">' +
+                        '<input type="text" class="flex-1 px-3 py-2 border rounded-lg" value="' + (item.text || '') + '" placeholder="Badge text" data-idx="' + idx + '" onchange="updateBadgeItem(this)">' +
+                        '<button type="button" onclick="removeBadgeItem(' + idx + ')" class="text-red-500 hover:text-red-700 p-2">' +
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>' +
+                        '</button>' +
+                        '</div>';
+                });
+                html = '<div class="space-y-4">' +
+                    '<div><label class="block text-sm font-medium text-gray-700 mb-1">Background Color</label>' +
+                    '<input type="color" class="w-full h-10 rounded-lg border cursor-pointer" value="' + (widget.settings.background || '#f9fafb') + '" onchange="updateWidgetSetting(\'background\', this.value)"></div>' +
+                    '<div><label class="block text-sm font-medium text-gray-700 mb-2">Trust Badge Items</label>' +
+                    '<div class="space-y-2" id="badge-items-editor">' + badgeItemsHtml + '</div>' +
+                    '<button type="button" onclick="addBadgeItem()" class="mt-2 text-sm text-rose-500 hover:text-rose-600">+ Add Badge</button></div>' +
+                    '</div>';
             } else {
                 html = getSpacingOptions(widget);
             }
@@ -2175,6 +2150,35 @@ function addFaqItem() {
 function removeFaqItem(index) {
     if (selectedWidgetIndex !== null && widgets[selectedWidgetIndex]) {
         widgets[selectedWidgetIndex].settings.items.splice(index, 1);
+        loadWidgetTab(widgets[selectedWidgetIndex], 'content');
+    }
+}
+
+function updateBadgeItem(input) {
+    if (selectedWidgetIndex !== null && widgets[selectedWidgetIndex]) {
+        const idx = parseInt(input.getAttribute('data-idx'));
+        const items = widgets[selectedWidgetIndex].settings.items || [];
+        if (!items[idx]) items[idx] = {};
+        items[idx].text = input.value;
+        widgets[selectedWidgetIndex].settings.items = items;
+        renderWidgets();
+    }
+}
+
+function addBadgeItem() {
+    if (selectedWidgetIndex !== null && widgets[selectedWidgetIndex]) {
+        const items = widgets[selectedWidgetIndex].settings.items || [];
+        items.push({text: ''});
+        widgets[selectedWidgetIndex].settings.items = items;
+        loadWidgetTab(widgets[selectedWidgetIndex], 'content');
+    }
+}
+
+function removeBadgeItem(index) {
+    if (selectedWidgetIndex !== null && widgets[selectedWidgetIndex]) {
+        const items = widgets[selectedWidgetIndex].settings.items || [];
+        items.splice(index, 1);
+        widgets[selectedWidgetIndex].settings.items = items;
         loadWidgetTab(widgets[selectedWidgetIndex], 'content');
     }
 }
