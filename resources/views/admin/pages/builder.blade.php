@@ -2047,15 +2047,32 @@ function loadWidgetTab(widget, tab) {
         case 'trust-badges':
             if (tab === 'content') {
                 const badgeItems = widget.settings.items || [
-                    {text: '100% Authentic', description: 'Genuine products guaranteed'},
-                    {text: 'Fast Delivery', description: 'Delivery within 24-48 hours'},
-                    {text: 'Secure Payment', description: '100% secure transactions'},
-                    {text: 'Easy Returns', description: 'Hassle-free return policy'}
+                    {text: '100% Authentic', description: 'Genuine products guaranteed', icon: 'shield-check'},
+                    {text: 'Fast Delivery', description: 'Delivery within 24-48 hours', icon: 'truck-fast'},
+                    {text: 'Secure Payment', description: '100% secure transactions', icon: 'shield-alt'},
+                    {text: 'Easy Returns', description: 'Hassle-free return policy', icon: 'undo'}
                 ];
+                const iconOptions = [
+                    {value: 'shield-check', label: 'Shield Check'},
+                    {value: 'truck-fast', label: 'Fast Delivery'},
+                    {value: 'shield-alt', label: 'Secure'},
+                    {value: 'undo', label: 'Returns'},
+                    {value: 'headset', label: 'Support'},
+                    {value: 'badge-check', label: 'Verified'},
+                    {value: 'support', label: 'Help'},
+                    {value: 'credit-card', label: 'Payment'}
+                ];
+                let iconOptionsHtml = '';
+                iconOptions.forEach(opt => {
+                    iconOptionsHtml += '<option value="' + opt.value + '">' + opt.label + '</option>';
+                });
                 let badgeItemsHtml = '';
                 badgeItems.forEach((item, idx) => {
                     badgeItemsHtml += '<div class="flex gap-2 items-start p-2 border rounded-lg mb-2">' +
                         '<div class="flex-1 space-y-2">' +
+                        '<select class="w-full px-3 py-2 border rounded-lg" data-idx="' + idx + '" data-field="icon" onchange="updateBadgeItem(this)">' +
+                        iconOptionsHtml +
+                        '</select>' +
                         '<input type="text" class="w-full px-3 py-2 border rounded-lg" value="' + (item.text || '') + '" placeholder="Badge title" data-idx="' + idx + '" data-field="text" onchange="updateBadgeItem(this)">' +
                         '<input type="text" class="w-full px-3 py-2 border rounded-lg text-sm" value="' + (item.description || '') + '" placeholder="Short description" data-idx="' + idx + '" data-field="description" onchange="updateBadgeItem(this)">' +
                         '</div>' +
@@ -2070,7 +2087,14 @@ function loadWidgetTab(widget, tab) {
                     '<div><label class="block text-sm font-medium text-gray-700 mb-2">Trust Badge Items</label>' +
                     '<div id="badge-items-editor">' + badgeItemsHtml + '</div>' +
                     '<button type="button" onclick="addBadgeItem()" class="mt-2 text-sm text-rose-500 hover:text-rose-600">+ Add Badge</button></div>' +
-                    '</div>';
+                    '</div>' +
+                    '<script>setTimeout(() => {' +
+                    'document.querySelectorAll("#badge-items-editor select").forEach(sel => {' +
+                    '  const idx = sel.getAttribute("data-idx");' +
+                    '  const items = widget.settings.items || [];' +
+                    '  if (items[idx]) sel.value = items[idx].icon || "shield-check";' +
+                    '});' +
+                    '}, 100);</script>';
             } else {
                 html = getSpacingOptions(widget);
             }
