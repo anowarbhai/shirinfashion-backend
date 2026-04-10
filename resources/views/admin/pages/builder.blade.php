@@ -2062,16 +2062,17 @@ function loadWidgetTab(widget, tab) {
                     {value: 'support', label: 'Help'},
                     {value: 'credit-card', label: 'Payment'}
                 ];
-                let iconOptionsHtml = '';
-                iconOptions.forEach(opt => {
-                    iconOptionsHtml += '<option value="' + opt.value + '">' + opt.label + '</option>';
-                });
                 let badgeItemsHtml = '';
                 badgeItems.forEach((item, idx) => {
+                    let selectOptions = '';
+                    iconOptions.forEach(opt => {
+                        const isSelected = (item.icon || 'shield-check') === opt.value ? ' selected' : '';
+                        selectOptions += '<option value="' + opt.value + '"' + isSelected + '>' + opt.label + '</option>';
+                    });
                     badgeItemsHtml += '<div class="flex gap-2 items-start p-2 border rounded-lg mb-2">' +
                         '<div class="flex-1 space-y-2">' +
                         '<select class="w-full px-3 py-2 border rounded-lg" data-idx="' + idx + '" data-field="icon" onchange="updateBadgeItem(this)">' +
-                        iconOptionsHtml +
+                        selectOptions +
                         '</select>' +
                         '<input type="text" class="w-full px-3 py-2 border rounded-lg" value="' + (item.text || '') + '" placeholder="Badge title" data-idx="' + idx + '" data-field="text" onchange="updateBadgeItem(this)">' +
                         '<input type="text" class="w-full px-3 py-2 border rounded-lg text-sm" value="' + (item.description || '') + '" placeholder="Short description" data-idx="' + idx + '" data-field="description" onchange="updateBadgeItem(this)">' +
@@ -2087,14 +2088,7 @@ function loadWidgetTab(widget, tab) {
                     '<div><label class="block text-sm font-medium text-gray-700 mb-2">Trust Badge Items</label>' +
                     '<div id="badge-items-editor">' + badgeItemsHtml + '</div>' +
                     '<button type="button" onclick="addBadgeItem()" class="mt-2 text-sm text-rose-500 hover:text-rose-600">+ Add Badge</button></div>' +
-                    '</div>' +
-                    '<script>setTimeout(function() {' +
-                    'document.querySelectorAll("#badge-items-editor select").forEach(function(sel) {' +
-                    '  var idx = sel.getAttribute("data-idx");' +
-                    '  var items = widget.settings.items || [];' +
-                    '  if (items[idx] && items[idx].icon) sel.value = items[idx].icon;' +
-                    '});' +
-                    '}, 100);</script>';
+                    '</div>';
             } else {
                 html = getSpacingOptions(widget);
             }
