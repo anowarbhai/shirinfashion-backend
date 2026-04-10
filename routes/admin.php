@@ -40,6 +40,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('coupons', \App\Http\Controllers\Admin\CouponController::class);
         Route::resource('sliders', \App\Http\Controllers\Admin\SliderController::class);
         Route::resource('pages', \App\Http\Controllers\Admin\PageController::class);
+        Route::get('pages/{page}/check-slug', [\App\Http\Controllers\Admin\PageController::class, 'checkSlug'])->name('pages.check-slug');
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
         Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
         Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class);
