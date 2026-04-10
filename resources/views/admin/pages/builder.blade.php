@@ -515,10 +515,23 @@ function renderWidgetPreview($type, $settings) {
             
         case 'trust-badges':
             $bg = $settings['background'] ?? '#f9fafb';
-            $items = $settings['items'] ?? [['text' => '100% Authentic', 'description' => 'Genuine products guaranteed'], ['text' => 'Fast Delivery', 'description' => 'Delivery within 24-48 hours'], ['text' => 'Secure Payment', 'description' => '100% secure transactions'], ['text' => 'Easy Returns', 'description' => 'Hassle-free return policy']];
+            $items = $settings['items'] ?? [['text' => '100% Authentic', 'description' => 'Genuine products guaranteed', 'icon' => 'shield-check'], ['text' => 'Fast Delivery', 'description' => 'Delivery within 24-48 hours', 'icon' => 'truck-fast'], ['text' => 'Secure Payment', 'description' => '100% secure transactions', 'icon' => 'shield-alt'], ['text' => 'Easy Returns', 'description' => 'Hassle-free return policy', 'icon' => 'undo']];
+            $icons = [
+                'shield-check' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+                'truck-fast' => 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m0 0v2a2 2 0 002 2h10a2 2 0 002-2v-2m0 0V9a2 2 0 00-2-2h-2',
+                'shield-alt' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+                'undo' => 'M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6',
+                'headset' => 'M3 18v-6a9 9 0 0118 0v6M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z',
+                'badge-check' => 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z',
+                'support' => 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z',
+                'credit-card' => 'M3 10h18M7 15h1m2 0h1m-2 4h1m4-4h1m2 0h1M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16l-7-5-7 5z',
+            ];
+            $defaultIcon = 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z';
             $html = '<div class="grid grid-cols-4 gap-4" style="background: '.$bg.'; padding: 24px;">';
             foreach ($items as $item) {
-                $html .= '<div class="text-center p-4"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><div class="font-medium text-gray-800">'.($item['text'] ?? '').'</div><div class="text-xs text-gray-500 mt-1">'.($item['description'] ?? '').'</div></div>';
+                $iconKey = $item['icon'] ?? 'shield-check';
+                $iconPath = $icons[$iconKey] ?? $defaultIcon;
+                $html .= '<div class="text-center p-4"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="'.$iconPath.'"></path></svg></div><div class="font-medium text-gray-800">'.($item['text'] ?? '').'</div><div class="text-xs text-gray-500 mt-1">'.($item['description'] ?? '').'</div></div>';
             }
             $html .= '</div>';
             break;
@@ -1266,14 +1279,27 @@ function renderWidgetPreviewHtml(type, settings) {
         case 'trust-badges': {
             const badgesBg = settings.background || '#f9fafb';
             const badges = settings.items || [
-                {text: '100% Authentic', description: 'Genuine products guaranteed'},
-                {text: 'Fast Delivery', description: 'Delivery within 24-48 hours'},
-                {text: 'Secure Payment', description: '100% secure transactions'},
-                {text: 'Easy Returns', description: 'Hassle-free return policy'}
+                {text: '100% Authentic', description: 'Genuine products guaranteed', icon: 'shield-check'},
+                {text: 'Fast Delivery', description: 'Delivery within 24-48 hours', icon: 'truck-fast'},
+                {text: 'Secure Payment', description: '100% secure transactions', icon: 'shield-alt'},
+                {text: 'Easy Returns', description: 'Hassle-free return policy', icon: 'undo'}
             ];
+            const iconPaths = {
+                'shield-check': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+                'truck-fast': 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m0 0v2a2 2 0 002 2h10a2 2 0 002-2v-2m0 0V9a2 2 0 00-2-2h-2',
+                'shield-alt': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+                'undo': 'M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6',
+                'headset': 'M3 18v-6a9 9 0 0118 0v6M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z',
+                'badge-check': 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z',
+                'support': 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z',
+                'credit-card': 'M3 10h18M7 15h1m2 0h1m-2 4h1m4-4h1m2 0h1M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16l-7-5-7 5z',
+            };
+            const defaultIcon = 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z';
             let badgesHtml = '<div class="grid grid-cols-4 gap-4" style="background: ' + badgesBg + '; padding: 24px;">';
             badges.forEach(item => {
-                badgesHtml += '<div class="text-center p-4"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><div class="font-medium text-gray-800">' + (item.text || '') + '</div><div class="text-xs text-gray-500 mt-1">' + (item.description || '') + '</div></div>';
+                const iconKey = item.icon || 'shield-check';
+                const iconPath = iconPaths[iconKey] || defaultIcon;
+                badgesHtml += '<div class="text-center p-4"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + iconPath + '"></path></svg></div><div class="font-medium text-gray-800">' + (item.text || '') + '</div><div class="text-xs text-gray-500 mt-1">' + (item.description || '') + '</div></div>';
             });
             badgesHtml += '</div>';
             return badgesHtml;
