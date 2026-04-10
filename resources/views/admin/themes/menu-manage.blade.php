@@ -17,8 +17,11 @@
     <!-- Tab Navigation -->
     <div class="border-b border-gray-200 mb-6">
         <nav class="-mb-px flex space-x-8" id="menuTabs">
-            <button type="button" class="menu-tab border-rose-500 text-rose-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="footer">
-                Footer Menus
+            <button type="button" class="menu-tab border-rose-500 text-rose-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="footer1">
+                Footer Column 1
+            </button>
+            <button type="button" class="menu-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="footer2">
+                Footer Column 2
             </button>
             <button type="button" class="menu-tab border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" data-tab="header">
                 Header Menu
@@ -130,10 +133,16 @@
 
 <script>
 let menus = {
-    'footer': {
-        name: 'Footer Column 1',
+    'footer1': {
+        name: 'Footer Column 1 - Quick Links',
         slug: 'footer-1',
-        location: 'footer',
+        location: 'footer1',
+        items: []
+    },
+    'footer2': {
+        name: 'Footer Column 2 - Customer Service',
+        slug: 'footer-2',
+        location: 'footer2',
         items: []
     },
     'header': {
@@ -150,7 +159,7 @@ let menus = {
     }
 };
 
-let currentTab = 'footer';
+let currentTab = 'footer1';
 let menuCounter = 0;
 
 // Initialize
