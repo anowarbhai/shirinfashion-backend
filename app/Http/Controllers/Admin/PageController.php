@@ -136,16 +136,16 @@ class PageController extends Controller
         ]);
     }
 
-    public function builder($page)
+    public function builder($page_id)
     {
-        $page = Page::findOrFail($page);
+        $page = Page::findOrFail($page_id);
 
         return view('admin.pages.builder', compact('page'));
     }
 
-    public function builderUpdate(Request $request, $page)
+    public function builderUpdate(Request $request, $page_id)
     {
-        $page = Page::findOrFail($page);
+        $page = Page::findOrFail($page_id);
 
         try {
             $widgetsInput = $request->input('widgets');
