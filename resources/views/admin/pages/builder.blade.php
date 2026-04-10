@@ -515,7 +515,7 @@ function renderWidgetPreview($type, $settings) {
             
         case 'trust-badges':
             $bg = $settings['background'] ?? '#f9fafb';
-            $items = $settings['items'] ?? [['text' => '100% Authentic', 'description' => 'Genuine products guaranteed', 'icon' => 'shield-check'], ['text' => 'Fast Delivery', 'description' => 'Delivery within 24-48 hours', 'icon' => 'truck-fast'], ['text' => 'Secure Payment', 'description' => '100% secure transactions', 'icon' => 'shield-alt'], ['text' => 'Easy Returns', 'description' => 'Hassle-free return policy', 'icon' => 'undo']];
+            $items = $settings['items'] ?? [['text' => '100% Authentic', 'description' => 'Genuine products guaranteed', 'icon' => 'shield-check', 'title_color' => '#1f2937', 'desc_color' => '#6b7280', 'item_bg' => '#ffffff'], ['text' => 'Fast Delivery', 'description' => 'Delivery within 24-48 hours', 'icon' => 'truck-fast', 'title_color' => '#1f2937', 'desc_color' => '#6b7280', 'item_bg' => '#ffffff'], ['text' => 'Secure Payment', 'description' => '100% secure transactions', 'icon' => 'shield-alt', 'title_color' => '#1f2937', 'desc_color' => '#6b7280', 'item_bg' => '#ffffff'], ['text' => 'Easy Returns', 'description' => 'Hassle-free return policy', 'icon' => 'undo', 'title_color' => '#1f2937', 'desc_color' => '#6b7280', 'item_bg' => '#ffffff']];
             $icons = [
                 'shield-check' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
                 'truck-fast' => 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m0 0v2a2 2 0 002 2h10a2 2 0 002-2v-2m0 0V9a2 2 0 00-2-2h-2',
@@ -531,7 +531,10 @@ function renderWidgetPreview($type, $settings) {
             foreach ($items as $item) {
                 $iconKey = $item['icon'] ?? 'shield-check';
                 $iconPath = $icons[$iconKey] ?? $defaultIcon;
-                $html .= '<div class="text-center p-4"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="'.$iconPath.'"></path></svg></div><div class="font-medium text-gray-800">'.($item['text'] ?? '').'</div><div class="text-xs text-gray-500 mt-1">'.($item['description'] ?? '').'</div></div>';
+                $titleColor = $item['title_color'] ?? '#1f2937';
+                $descColor = $item['desc_color'] ?? '#6b7280';
+                $itemBg = $item['item_bg'] ?? '#ffffff';
+                $html .= '<div class="text-center p-4" style="background: '.$itemBg.'; border-radius: 8px;"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="'.$iconPath.'"></path></svg></div><div class="font-medium" style="color: '.$titleColor.'">'.($item['text'] ?? '').'</div><div class="text-xs mt-1" style="color: '.$descColor.'">'.($item['description'] ?? '').'</div></div>';
             }
             $html .= '</div>';
             break;
@@ -1006,7 +1009,7 @@ function getWidgetDefaults(type) {
         divider: { style: 'solid', color: '#e5e7eb', margin: 16, padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 },
         'two-columns': { gap: 4, padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 },
         'three-columns': { gap: 4, padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 },
-        'trust-badges': { background: '#f9fafb', items: [{text: '100% Authentic', description: 'Genuine products guaranteed', icon: 'shield-check'}, {text: 'Fast Delivery', description: 'Delivery within 24-48 hours', icon: 'truck-fast'}, {text: 'Secure Payment', description: '100% secure transactions', icon: 'shield-alt'}, {text: 'Easy Returns', description: 'Hassle-free return policy', icon: 'undo'}], padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 }
+        'trust-badges': { background: '#f9fafb', items: [{text: '100% Authentic', description: 'Genuine products guaranteed', icon: 'shield-check', title_color: '#1f2937', desc_color: '#6b7280', item_bg: '#ffffff'}, {text: 'Fast Delivery', description: 'Delivery within 24-48 hours', icon: 'truck-fast', title_color: '#1f2937', desc_color: '#6b7280', item_bg: '#ffffff'}, {text: 'Secure Payment', description: '100% secure transactions', icon: 'shield-alt', title_color: '#1f2937', desc_color: '#6b7280', item_bg: '#ffffff'}, {text: 'Easy Returns', description: 'Hassle-free return policy', icon: 'undo', title_color: '#1f2937', desc_color: '#6b7280', item_bg: '#ffffff'}], padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 }
     };
     return defaults[type] || {};
 }
@@ -1299,7 +1302,10 @@ function renderWidgetPreviewHtml(type, settings) {
             badges.forEach(item => {
                 const iconKey = item.icon || 'shield-check';
                 const iconPath = iconPaths[iconKey] || defaultIcon;
-                badgesHtml += '<div class="text-center p-4"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + iconPath + '"></path></svg></div><div class="font-medium text-gray-800">' + (item.text || '') + '</div><div class="text-xs text-gray-500 mt-1">' + (item.description || '') + '</div></div>';
+                const titleColor = item.title_color || '#1f2937';
+                const descColor = item.desc_color || '#6b7280';
+                const itemBg = item.item_bg || '#ffffff';
+                badgesHtml += '<div class="text-center p-4" style="background: ' + itemBg + '; border-radius: 8px;"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + iconPath + '"></path></svg></div><div class="font-medium" style="color: ' + titleColor + ';">' + (item.text || '') + '</div><div class="text-xs mt-1" style="color: ' + descColor + ';">' + (item.description || '') + '</div></div>';
             });
             badgesHtml += '</div>';
             return badgesHtml;
@@ -2074,10 +2080,10 @@ function loadWidgetTab(widget, tab) {
         case 'trust-badges':
             if (tab === 'content') {
                 const badgeItems = widget.settings.items || [
-                    {text: '100% Authentic', description: 'Genuine products guaranteed', icon: 'shield-check'},
-                    {text: 'Fast Delivery', description: 'Delivery within 24-48 hours', icon: 'truck-fast'},
-                    {text: 'Secure Payment', description: '100% secure transactions', icon: 'shield-alt'},
-                    {text: 'Easy Returns', description: 'Hassle-free return policy', icon: 'undo'}
+                    {text: '100% Authentic', description: 'Genuine products guaranteed', icon: 'shield-check', title_color: '#1f2937', desc_color: '#6b7280', item_bg: '#ffffff'},
+                    {text: 'Fast Delivery', description: 'Delivery within 24-48 hours', icon: 'truck-fast', title_color: '#1f2937', desc_color: '#6b7280', item_bg: '#ffffff'},
+                    {text: 'Secure Payment', description: '100% secure transactions', icon: 'shield-alt', title_color: '#1f2937', desc_color: '#6b7280', item_bg: '#ffffff'},
+                    {text: 'Easy Returns', description: 'Hassle-free return policy', icon: 'undo', title_color: '#1f2937', desc_color: '#6b7280', item_bg: '#ffffff'}
                 ];
                 const iconOptions = [
                     {value: 'shield-check', label: 'Shield Check'},
@@ -2103,6 +2109,11 @@ function loadWidgetTab(widget, tab) {
                         '</select>' +
                         '<input type="text" class="w-full px-3 py-2 border rounded-lg" value="' + (item.text || '') + '" placeholder="Badge title" data-idx="' + idx + '" data-field="text" onchange="updateBadgeItem(this)">' +
                         '<input type="text" class="w-full px-3 py-2 border rounded-lg text-sm" value="' + (item.description || '') + '" placeholder="Short description" data-idx="' + idx + '" data-field="description" onchange="updateBadgeItem(this)">' +
+                        '<div class="grid grid-cols-3 gap-2 mt-2">' +
+                        '<div><label class="block text-xs text-gray-500 mb-1">Title Color</label><input type="color" class="w-full h-8 rounded border cursor-pointer" value="' + (item.title_color || '#1f2937') + '" data-idx="' + idx + '" data-field="title_color" onchange="updateBadgeItem(this)"></div>' +
+                        '<div><label class="block text-xs text-gray-500 mb-1">Desc Color</label><input type="color" class="w-full h-8 rounded border cursor-pointer" value="' + (item.desc_color || '#6b7280') + '" data-idx="' + idx + '" data-field="desc_color" onchange="updateBadgeItem(this)"></div>' +
+                        '<div><label class="block text-xs text-gray-500 mb-1">Item BG</label><input type="color" class="w-full h-8 rounded border cursor-pointer" value="' + (item.item_bg || '#ffffff') + '" data-idx="' + idx + '" data-field="item_bg" onchange="updateBadgeItem(this)"></div>' +
+                        '</div>' +
                         '</div>' +
                         '<button type="button" onclick="removeBadgeItem(' + idx + ')" class="text-red-500 hover:text-red-700 p-1 mt-1">' +
                         '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>' +
@@ -2222,7 +2233,7 @@ function updateBadgeItem(input) {
 function addBadgeItem() {
     if (selectedWidgetIndex !== null && widgets[selectedWidgetIndex]) {
         const items = widgets[selectedWidgetIndex].settings.items || [];
-        items.push({text: ''});
+        items.push({text: '', description: '', icon: 'shield-check', title_color: '#1f2937', desc_color: '#6b7280', item_bg: '#ffffff'});
         widgets[selectedWidgetIndex].settings.items = items;
         loadWidgetTab(widgets[selectedWidgetIndex], 'content');
     }
