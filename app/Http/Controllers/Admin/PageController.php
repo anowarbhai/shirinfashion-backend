@@ -136,13 +136,17 @@ class PageController extends Controller
         ]);
     }
 
-    public function builder(Page $page)
+    public function builder($page)
     {
+        $page = Page::findOrFail($page);
+
         return view('admin.pages.builder', compact('page'));
     }
 
-    public function builderUpdate(Request $request, Page $page)
+    public function builderUpdate(Request $request, $page)
     {
+        $page = Page::findOrFail($page);
+
         try {
             $widgetsInput = $request->input('widgets');
 
@@ -172,8 +176,6 @@ class PageController extends Controller
 
             return redirect()->route('admin.pages.builder', $page)->with('success', 'Widgets saved successfully!');
         } catch (\Exception $e) {
-            \Log::error('Page builder save error: '.$e->getMessage());
-
             if ($request->expectsJson()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
             }

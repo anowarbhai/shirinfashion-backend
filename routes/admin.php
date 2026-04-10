@@ -41,8 +41,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('sliders', \App\Http\Controllers\Admin\SliderController::class);
         Route::resource('pages', \App\Http\Controllers\Admin\PageController::class);
         Route::get('pages/check-slug', [\App\Http\Controllers\Admin\PageController::class, 'checkSlug'])->name('pages.check-slug');
-        Route::get('pages/{page}/check-slug', [\App\Http\Controllers\Admin\PageController::class, 'checkSlug'])->name('pages.check-slug-with-id');
-        Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+        Route::get('pages/{page_id}/check-slug', [\App\Http\Controllers\Admin\PageController::class, 'checkSlug'])->name('pages.check-slug-with-id');
+
+        // Page Builder Routes
+        Route::get('pages/{page_id}/builder', [\App\Http\Controllers\Admin\PageController::class, 'builder'])->name('pages.builder');
+        Route::post('pages/{page_id}/builder', [\App\Http\Controllers\Admin\PageController::class, 'builderUpdate'])->name('pages.builder.update');
         Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
         Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class);
         Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
