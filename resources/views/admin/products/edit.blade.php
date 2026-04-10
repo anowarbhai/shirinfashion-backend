@@ -191,6 +191,12 @@
                     class="w-4 h-4 text-rose-600 border-gray-300 rounded">
                 <label class="ml-2 text-sm text-gray-700">Active</label>
             </div>
+            
+            <div class="flex items-center">
+                <input type="checkbox" name="step_url_enabled" value="1" {{ old('step_url_enabled', $product->step_url_enabled) ? 'checked' : '' }}
+                    class="w-4 h-4 text-rose-600 border-gray-300 rounded">
+                <label class="ml-2 text-sm text-gray-700">Enable Step URL (/step/...)</label>
+            </div>
         </div>
 
         <div class="mt-6">
