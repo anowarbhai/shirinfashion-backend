@@ -145,7 +145,10 @@ class ProductController extends BaseController
             return $this->error('Product not found', 404);
         }
 
-        return $this->success($product);
+        return $this->success([
+            ...$product->toArray(),
+            'step_url_enabled' => $product->step_url_enabled,
+        ]);
     }
 
     public function update(Request $request, Product $product)
