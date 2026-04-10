@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Menu;
 use App\Models\ThemeSetting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -15,6 +16,17 @@ class ThemeController extends BaseController
 
         $data = Cache::remember($cacheKey, 3600, function () {
             $settings = ThemeSetting::getSettings();
+
+            // Get menus
+            $menus = Menu::with('allItems')->where('is_active', true)->get()->map(function ($menu) {
+                return [
+                    'id' => $menu->id,
+                    'name' => $menu->name,
+                    'slug' => $menu->slug,
+                    'location' => $menu->location,
+                    'items' => $this->buildMenuTree($menu->allItems),
+                ];
+            });
 
             return [
                 'logo' => $settings->logo ? asset('storage/'.$settings->logo) : null,
@@ -35,6 +47,7 @@ class ThemeController extends BaseController
                 'header_style' => $settings->header_style,
                 'footer_style' => $settings->footer_style,
                 'primary_menu' => $settings->primary_menu,
+                'menus' => $menus,
                 'header_styles' => ThemeSetting::getHeaderStyles(),
                 'footer_styles' => ThemeSetting::getFooterStyles(),
 
@@ -62,6 +75,33 @@ class ThemeController extends BaseController
         });
 
         return $this->success($data);
+    }
+
+    private function buildMenuTree($items, $parentId = null)
+    {
+        $tree = [];
+
+        foreach ($items as $item) {
+            if ($item->parent_id == $parentId) {
+                $node = [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'url' => $item->url,
+                    'target' => $item->target,
+                    'icon' => $item->icon,
+                    'order' => $item->order,
+                ];
+
+                $children = $items->where('parent_id', $item->id);
+                if ($children->count() > 0) {
+                    $node['children'] = $this->buildMenuTree($items, $item->id);
+                }
+
+                $tree[] = $node;
+            }
+        }
+
+        return $tree;
     }
 
     public function favicon()
