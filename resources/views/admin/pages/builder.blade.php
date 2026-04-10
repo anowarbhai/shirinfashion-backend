@@ -515,10 +515,10 @@ function renderWidgetPreview($type, $settings) {
             
         case 'trust-badges':
             $bg = $settings['background'] ?? '#f9fafb';
-            $items = $settings['items'] ?? [['text' => '100% Authentic'], ['text' => 'Fast Delivery'], ['text' => 'Secure Payment'], ['text' => 'Easy Returns']];
+            $items = $settings['items'] ?? [['text' => '100% Authentic', 'description' => 'Genuine products guaranteed'], ['text' => 'Fast Delivery', 'description' => 'Delivery within 24-48 hours'], ['text' => 'Secure Payment', 'description' => '100% secure transactions'], ['text' => 'Easy Returns', 'description' => 'Hassle-free return policy']];
             $html = '<div class="grid grid-cols-4 gap-4" style="background: '.$bg.'; padding: 24px;">';
             foreach ($items as $item) {
-                $html .= '<div class="text-center p-4"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><div class="font-medium text-gray-800">'.($item['text'] ?? '').'</div></div>';
+                $html .= '<div class="text-center p-4"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><div class="font-medium text-gray-800">'.($item['text'] ?? '').'</div><div class="text-xs text-gray-500 mt-1">'.($item['description'] ?? '').'</div></div>';
             }
             $html .= '</div>';
             break;
@@ -1264,10 +1264,15 @@ function renderWidgetPreviewHtml(type, settings) {
             
         case 'trust-badges': {
             const badgesBg = settings.background || '#f9fafb';
-            const badges = settings.items || [{text: '100% Authentic'}, {text: 'Fast Delivery'}, {text: 'Secure Payment'}, {text: 'Easy Returns'}];
+            const badges = settings.items || [
+                {text: '100% Authentic', description: 'Genuine products guaranteed'},
+                {text: 'Fast Delivery', description: 'Delivery within 24-48 hours'},
+                {text: 'Secure Payment', description: '100% secure transactions'},
+                {text: 'Easy Returns', description: 'Hassle-free return policy'}
+            ];
             let badgesHtml = '<div class="grid grid-cols-4 gap-4" style="background: ' + badgesBg + '; padding: 24px;">';
             badges.forEach(item => {
-                badgesHtml += '<div class="text-center p-4"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><div class="font-medium text-gray-800">' + (item.text || '') + '</div></div>';
+                badgesHtml += '<div class="text-center p-4"><div class="w-12 h-12 rounded-full bg-rose-50 mx-auto mb-2 flex items-center justify-center"><svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div><div class="font-medium text-gray-800">' + (item.text || '') + '</div><div class="text-xs text-gray-500 mt-1">' + (item.description || '') + '</div></div>';
             });
             badgesHtml += '</div>';
             return badgesHtml;
@@ -2042,16 +2047,19 @@ function loadWidgetTab(widget, tab) {
         case 'trust-badges':
             if (tab === 'content') {
                 const badgeItems = widget.settings.items || [
-                    {text: '100% Authentic'},
-                    {text: 'Fast Delivery'},
-                    {text: 'Secure Payment'},
-                    {text: 'Easy Returns'}
+                    {text: '100% Authentic', description: 'Genuine products guaranteed'},
+                    {text: 'Fast Delivery', description: 'Delivery within 24-48 hours'},
+                    {text: 'Secure Payment', description: '100% secure transactions'},
+                    {text: 'Easy Returns', description: 'Hassle-free return policy'}
                 ];
                 let badgeItemsHtml = '';
                 badgeItems.forEach((item, idx) => {
-                    badgeItemsHtml += '<div class="flex gap-2 items-center">' +
-                        '<input type="text" class="flex-1 px-3 py-2 border rounded-lg" value="' + (item.text || '') + '" placeholder="Badge text" data-idx="' + idx + '" onchange="updateBadgeItem(this)">' +
-                        '<button type="button" onclick="removeBadgeItem(' + idx + ')" class="text-red-500 hover:text-red-700 p-2">' +
+                    badgeItemsHtml += '<div class="flex gap-2 items-start p-2 border rounded-lg mb-2">' +
+                        '<div class="flex-1 space-y-2">' +
+                        '<input type="text" class="w-full px-3 py-2 border rounded-lg" value="' + (item.text || '') + '" placeholder="Badge title" data-idx="' + idx + '" data-field="text" onchange="updateBadgeItem(this)">' +
+                        '<input type="text" class="w-full px-3 py-2 border rounded-lg text-sm" value="' + (item.description || '') + '" placeholder="Short description" data-idx="' + idx + '" data-field="description" onchange="updateBadgeItem(this)">' +
+                        '</div>' +
+                        '<button type="button" onclick="removeBadgeItem(' + idx + ')" class="text-red-500 hover:text-red-700 p-1 mt-1">' +
                         '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>' +
                         '</button>' +
                         '</div>';
@@ -2060,7 +2068,7 @@ function loadWidgetTab(widget, tab) {
                     '<div><label class="block text-sm font-medium text-gray-700 mb-1">Background Color</label>' +
                     '<input type="color" class="w-full h-10 rounded-lg border cursor-pointer" value="' + (widget.settings.background || '#f9fafb') + '" onchange="updateWidgetSetting(\'background\', this.value)"></div>' +
                     '<div><label class="block text-sm font-medium text-gray-700 mb-2">Trust Badge Items</label>' +
-                    '<div class="space-y-2" id="badge-items-editor">' + badgeItemsHtml + '</div>' +
+                    '<div id="badge-items-editor">' + badgeItemsHtml + '</div>' +
                     '<button type="button" onclick="addBadgeItem()" class="mt-2 text-sm text-rose-500 hover:text-rose-600">+ Add Badge</button></div>' +
                     '</div>';
             } else {
@@ -2157,9 +2165,10 @@ function removeFaqItem(index) {
 function updateBadgeItem(input) {
     if (selectedWidgetIndex !== null && widgets[selectedWidgetIndex]) {
         const idx = parseInt(input.getAttribute('data-idx'));
+        const field = input.getAttribute('data-field') || 'text';
         const items = widgets[selectedWidgetIndex].settings.items || [];
         if (!items[idx]) items[idx] = {};
-        items[idx].text = input.value;
+        items[idx][field] = input.value;
         widgets[selectedWidgetIndex].settings.items = items;
         renderWidgets();
     }
