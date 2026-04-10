@@ -1,0 +1,60 @@
+@extends('admin.layouts.master')
+
+@section('title', 'Header - Shirin Fashion Admin')
+@section('header', 'Header Settings')
+
+@section('content')
+@if(session('success'))
+<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{{ session('success') }}</div>
+@endif
+
+<div class="bg-white rounded-xl shadow-sm p-6">
+    <p class="text-gray-600 mb-6">Choose a header style for your website. The selected style will be applied to all pages.</p>
+    
+    <form method="POST" action="{{ route('admin.themes.header.update') }}">
+        @csrf
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach($headerStyles as $key => $style)
+            <label class="cursor-pointer">
+                <input type="radio" name="header_style" value="{{ $key }}" class="hidden peer" {{ $settings->header_style == $key ? 'checked' : '' }}>
+                <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-rose-500 peer-checked:border-rose-500 peer-checked:bg-rose-50 transition-all">
+                    <div class="bg-gray-100 rounded-lg h-32 mb-4 flex items-center justify-center">
+                        @if(file_exists(public_path($style['preview'])))
+                        <img src="{{ asset($style['preview']) }}" alt="{{ $style['name'] }}" class="h-full w-full object-cover rounded">
+                        @else
+                        <div class="text-center text-gray-400">
+                            <i class="fas fa-image text-4xl mb-2"></i>
+                            <p class="text-sm">Preview</p>
+                        </div>
+                        @endif
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-1">{{ $style['name'] }}</h3>
+                    <p class="text-sm text-gray-600">{{ $style['description'] }}</p>
+                    <div class="mt-3 text-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $settings->header_style == $key ? 'bg-rose-600 text-white' : 'bg-gray-200 text-gray-700' }}">
+                            {{ $settings->header_style == $key ? 'Selected' : 'Select' }}
+                        </span>
+                    </div>
+                </div>
+            </label>
+            @endforeach
+        </div>
+
+        <div class="mt-6 pt-6 border-t">
+            <button type="submit" class="bg-rose-600 text-white px-6 py-2 rounded-lg hover:bg-rose-700">
+                <i class="fas fa-save mr-2"></i>Save Header Style
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6">
+    <h3 class="font-semibold text-blue-900 mb-2"><i class="fas fa-info-circle mr-2"></i>Header Style Information</h3>
+    <ul class="text-sm text-blue-800 space-y-2">
+        <li><strong>Classic Header:</strong> Traditional layout with logo on the left, navigation in the center, and icons on the right.</li>
+        <li><strong>Modern Header:</strong> Full-width design with a centered logo and mega menu dropdown support.</li>
+        <li><strong>Minimal Header:</strong> Clean and simple layout with a hamburger menu for mobile-friendly navigation.</li>
+    </ul>
+</div>
+@endsection
