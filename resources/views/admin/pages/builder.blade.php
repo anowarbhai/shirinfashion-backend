@@ -992,7 +992,8 @@ function getWidgetDefaults(type) {
         spacer: { height: 32, padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 },
         divider: { style: 'solid', color: '#e5e7eb', margin: 16, padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 },
         'two-columns': { gap: 4, padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 },
-        'three-columns': { gap: 4, padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 }
+        'three-columns': { gap: 4, padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 },
+        'trust-badges': { background: '#f9fafb', items: [{text: '100% Authentic', description: 'Genuine products guaranteed', icon: 'shield-check'}, {text: 'Fast Delivery', description: 'Delivery within 24-48 hours', icon: 'truck-fast'}, {text: 'Secure Payment', description: '100% secure transactions', icon: 'shield-alt'}, {text: 'Easy Returns', description: 'Hassle-free return policy', icon: 'undo'}], padding_top: 20, padding_bottom: 20, margin_top: 0, margin_bottom: 0 }
     };
     return defaults[type] || {};
 }
