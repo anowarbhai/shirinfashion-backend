@@ -2088,11 +2088,11 @@ function loadWidgetTab(widget, tab) {
                     '<div id="badge-items-editor">' + badgeItemsHtml + '</div>' +
                     '<button type="button" onclick="addBadgeItem()" class="mt-2 text-sm text-rose-500 hover:text-rose-600">+ Add Badge</button></div>' +
                     '</div>' +
-                    '<script>setTimeout(() => {' +
-                    'document.querySelectorAll("#badge-items-editor select").forEach(sel => {' +
-                    '  const idx = sel.getAttribute("data-idx");' +
-                    '  const items = widget.settings.items || [];' +
-                    '  if (items[idx]) sel.value = items[idx].icon || "shield-check";' +
+                    '<script>setTimeout(function() {' +
+                    'document.querySelectorAll("#badge-items-editor select").forEach(function(sel) {' +
+                    '  var idx = sel.getAttribute("data-idx");' +
+                    '  var items = widget.settings.items || [];' +
+                    '  if (items[idx] && items[idx].icon) sel.value = items[idx].icon;' +
                     '});' +
                     '}, 100);</script>';
             } else {
