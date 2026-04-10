@@ -24,6 +24,7 @@ class Product extends Model
         'stock_status',
         'is_featured',
         'is_active',
+        'step_url_enabled',
         'reviews_enabled',
         'avg_rating_enabled',
         'average_rating',
@@ -39,6 +40,7 @@ class Product extends Model
     protected $casts = [
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
+        'step_url_enabled' => 'boolean',
         'manage_stock' => 'boolean',
         'reviews_enabled' => 'boolean',
         'avg_rating_enabled' => 'boolean',
