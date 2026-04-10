@@ -13,6 +13,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');
 
     Route::middleware(['auth', 'is_admin'])->group(function () {
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'show'])->name('profile.show');
         Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
@@ -103,8 +104,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('menus/save', [\App\Http\Controllers\Admin\MenuController::class, 'menuSave'])->name('menus.save');
         Route::get('menus/api', [\App\Http\Controllers\Admin\MenuController::class, 'menuApi'])->name('menus.api');
 
-        Route::get('pages/{page}/builder', [\App\Http\Controllers\Admin\PageController::class, 'builder'])->name('pages.builder');
-        Route::post('pages/{page}/builder', [\App\Http\Controllers\Admin\PageController::class, 'builderUpdate'])->name('pages.builder.update');
         Route::patch('sliders/{slider}/toggle', [\App\Http\Controllers\Admin\SliderController::class, 'toggleStatus'])->name('sliders.toggle');
 
         Route::get('contacts', [ContactController::class, 'index'])->name('contacts.index');
