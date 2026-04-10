@@ -113,7 +113,7 @@
             return;
         }
 
-        fetch('{{ route("admin.pages.check-slug") }}', {
+        fetch('{{ route("admin.pages.check-slug-with-id", $page->id) }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
