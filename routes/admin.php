@@ -45,7 +45,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Page Builder Routes
         Route::get('pages/{page_id}/builder', [\App\Http\Controllers\Admin\PageController::class, 'builder'])->name('pages.builder');
-        Route::post('pages/{page_id}/builder', [\App\Http\Controllers\Admin\PageController::class, 'builderUpdate'])->name('pages.builder.update');
+        Route::post('pages/{page_id}/builder', [\App\Http\Controllers\Admin\PageController::class, 'builderUpdate'])->name('pages.builder-update');
         Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
         Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class);
         Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
