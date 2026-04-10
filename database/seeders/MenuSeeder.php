@@ -37,11 +37,11 @@ class MenuSeeder extends Seeder
         );
 
         $footer2Items = [
-            ['title' => 'FAQ', 'url' => '/page/faq', 'order' => 1],
-            ['title' => 'Shipping Info', 'url' => '/page/shipping', 'order' => 2],
-            ['title' => 'Returns', 'url' => '/page/returns', 'order' => 3],
-            ['title' => 'Privacy Policy', 'url' => '/page/privacy-policy', 'order' => 4],
-            ['title' => 'Terms of Service', 'url' => '/page/terms', 'order' => 5],
+            ['title' => 'FAQ', 'url' => '/faq', 'order' => 1],
+            ['title' => 'Shipping Info', 'url' => '/shipping', 'order' => 2],
+            ['title' => 'Returns', 'url' => '/returns', 'order' => 3],
+            ['title' => 'Privacy Policy', 'url' => '/privacy-policy', 'order' => 4],
+            ['title' => 'Terms of Service', 'url' => '/terms', 'order' => 5],
         ];
 
         foreach ($footer2Items as $index => $item) {

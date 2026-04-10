@@ -76,13 +76,13 @@
                         <button type="button" onclick="addQuickLink('/contact')" class="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded hover:border-rose-500 text-sm">
                             <i class="fas fa-envelope mr-2 text-gray-400"></i>Contact
                         </button>
-                        <button type="button" onclick="addQuickLink('/page/faq')" class="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded hover:border-rose-500 text-sm">
+                        <button type="button" onclick="addQuickLink('/faq')" class="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded hover:border-rose-500 text-sm">
                             <i class="fas fa-question-circle mr-2 text-gray-400"></i>FAQ
                         </button>
-                        <button type="button" onclick="addQuickLink('/page/shipping')" class="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded hover:border-rose-500 text-sm">
+                        <button type="button" onclick="addQuickLink('/shipping')" class="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded hover:border-rose-500 text-sm">
                             <i class="fas fa-shipping-fast mr-2 text-gray-400"></i>Shipping Info
                         </button>
-                        <button type="button" onclick="addQuickLink('/page/returns')" class="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded hover:border-rose-500 text-sm">
+                        <button type="button" onclick="addQuickLink('/returns')" class="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded hover:border-rose-500 text-sm">
                             <i class="fas fa-undo mr-2 text-gray-400"></i>Returns
                         </button>
                     </div>
@@ -246,15 +246,15 @@ function addMenuItem() {
 }
 
 function addQuickLink(url) {
-    const titles = {
+        const titles = {
         '/': 'Home',
         '/shop': 'Shop',
         '/categories': 'Categories',
         '/about': 'About Us',
         '/contact': 'Contact',
-        '/page/faq': 'FAQ',
-        '/page/shipping': 'Shipping Info',
-        '/page/returns': 'Returns'
+        '/faq': 'FAQ',
+        '/shipping': 'Shipping Info',
+        '/returns': 'Returns'
     };
     
     menus[currentTab].items.push({

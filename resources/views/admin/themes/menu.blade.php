@@ -82,10 +82,10 @@
                 <li><code>/</code> - Home page</li>
                 <li><code>/shop</code> - Shop page</li>
                 <li><code>/categories</code> - Categories</li>
-                <li><code>/page/faq</code> - FAQ</li>
-                <li><code>/page/shipping</code> - Shipping Info</li>
-                <li><code>/page/returns</code> - Returns</li>
-                <li><code>/page/privacy-policy</code> - Privacy Policy</li>
+                <li><code>/faq</code> - FAQ</li>
+                <li><code>/shipping</code> - Shipping Info</li>
+                <li><code>/returns</code> - Returns</li>
+                <li><code>/privacy-policy</code> - Privacy Policy</li>
             </ul>
         </div>
     </div>
