@@ -91,3 +91,7 @@ Route::get('/pages/{slug}', [PageController::class, 'show']);
 
 // Menus
 Route::get('/menus', [App\Http\Controllers\Api\MenuController::class, 'index']);
+
+// Volume Discounts
+Route::get('/volume-discounts', [VolumeDiscountController::class, 'index']);
+Route::post('/volume-discounts', [VolumeDiscountController::class, 'store']);

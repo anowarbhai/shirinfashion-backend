@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\GeneralSetting;
 use App\Models\Product;
+use App\Models\VolumeDiscount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -145,9 +146,17 @@ class ProductController extends BaseController
             return $this->error('Product not found', 404);
         }
 
+        $volumeDiscounts = VolumeDiscount::with(['freeProduct:id,name,slug,image'])
+            ->where('product_id', $product->id)
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('quantity')
+            ->get();
+
         return $this->success([
             ...$product->toArray(),
             'step_url_enabled' => $product->step_url_enabled,
+            'volume_discounts' => $volumeDiscounts,
         ]);
     }
 
