@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShippingController;
 use App\Http\Controllers\Api\SliderController;
 use App\Http\Controllers\Api\ThemeController;
+use App\Http\Controllers\Api\VolumeDiscountController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {

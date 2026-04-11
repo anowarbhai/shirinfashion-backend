@@ -3,57 +3,69 @@
 @section('title', 'Volume Discounts')
 
 @section('content')
-<div class="flex h-screen">
-    <!-- Left Panel - Product List -->
-    <div class="w-1/3 bg-white border-r border-gray-200 flex flex-col">
-        <div class="p-4 border-b border-gray-200">
-            <h3 class="font-semibold text-gray-800">Select Product</h3>
-            <input type="text" id="productSearch" placeholder="Search products..." 
-                class="mt-2 w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500">
+<div>
+    <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-800">Volume Discounts</h1>
+                <p class="text-sm text-gray-500 mt-1">Manage quantity-based pricing for products</p>
+            </div>
         </div>
-        <div class="flex-1 overflow-y-auto" id="productList">
-            @foreach($products as $product)
-            <div class="p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 product-item" 
-                data-product-id="{{ $product->id }}" onclick="selectProduct({{ $product->id }}, '{{ addslashes($product->name) }}')">
-                <div class="flex items-center gap-3">
-                    @if($product->image)
-                    <img src="{{ asset('storage/'.$product->image) }}" class="w-10 h-10 object-cover rounded">
-                    @endif
-                    <div>
-                        <p class="font-medium text-gray-800 text-sm">{{ $product->name }}</p>
-                        <p class="text-xs text-gray-500">৳{{ $product->sale_price ?? $product->price }}</p>
+
+        <div class="flex h-[calc(100vh-200px)]">
+            <!-- Left Panel - Product List -->
+            <div class="w-1/3 bg-white border border-gray-200 rounded-lg flex flex-col mr-4">
+                <div class="p-4 border-b border-gray-200">
+                    <h3 class="font-semibold text-gray-800">Select Product</h3>
+                    <input type="text" id="productSearch" placeholder="Search products..." 
+                        class="mt-2 w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500">
+                </div>
+                <div class="flex-1 overflow-y-auto" id="productList">
+                    @foreach($products as $product)
+                    <div class="p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 product-item" 
+                        data-product-id="{{ $product->id }}" onclick="selectProduct({{ $product->id }}, '{{ addslashes($product->name) }}')">
+                        <div class="flex items-center gap-3">
+                            @if($product->image)
+                            <img src="{{ str_starts_with($product->image, 'http') ? $product->image : asset($product->image) }}" class="w-10 h-10 object-cover rounded">
+                            @endif
+                            <div>
+                                <p class="font-medium text-gray-800 text-sm">{{ $product->name }}</p>
+                                <p class="text-xs text-gray-500">৳{{ $product->sale_price ?? $product->price }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Right Panel - Volume Discounts -->
+            <div class="flex-1 flex flex-col bg-white border border-gray-200 rounded-lg">
+                <div class="p-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Volume Discounts</h3>
+                            <p id="selectedProductName" class="text-sm text-gray-500">Select a product from the left</p>
+                        </div>
+                        <button type="button" onclick="addTier()" id="addTierBtn" class="px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            + Add Tier
+                        </button>
                     </div>
                 </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
 
-    <!-- Right Panel - Volume Discounts -->
-    <div class="flex-1 flex flex-col">
-        <div class="p-4 border-b border-gray-200 bg-white">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h3 class="font-semibold text-gray-800">Volume Discounts</h3>
-                    <p id="selectedProductName" class="text-sm text-gray-500">Select a product from the left</p>
+                <div class="flex-1 overflow-y-auto p-4" id="tiersContainer">
+                    <p class="text-center text-gray-500 py-10">Select a product to manage volume discounts</p>
                 </div>
-                <button type="button" onclick="addTier()" id="addTierBtn" class="px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                    + Add Tier
-                </button>
+
+                <div class="p-4 border-t border-gray-200 bg-gray-50 rounded-b-lg" id="saveSection" style="display: none;">
+                    <button type="button" onclick="saveTiers()" class="w-full px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600">
+                        Save Volume Discounts
+                    </button>
+                </div>
             </div>
-        </div>
-
-        <div class="flex-1 overflow-y-auto p-4" id="tiersContainer">
-            <p class="text-center text-gray-500 py-10">Select a product to manage volume discounts</p>
-        </div>
-
-        <div class="p-4 border-t border-gray-200 bg-white" id="saveSection" style="display: none;">
-            <button type="button" onclick="saveTiers()" class="w-full px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600">
-                Save Volume Discounts
-            </button>
         </div>
     </div>
 </div>
+@endsection
 
 @push('scripts')
 <script>
@@ -131,7 +143,7 @@ function renderTiers() {
                     <select class="w-full px-3 py-2 border rounded-lg" onchange="updateTier(${index}, 'free_product_id', this.value)">
                         <option value="">None</option>
                         @foreach($products as $p)
-                        <option value="{{ $p->id }}">{{ $p->name }}</option>
+                        <option value="{{ $p->id }}" ${tier.free_product_id == {{ $p->id }} ? 'selected' : ''}>{{ $p->name }}</option>
                         @endforeach
                     </select>
                 </div>

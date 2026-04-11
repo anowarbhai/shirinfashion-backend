@@ -2,7 +2,7 @@
 use App\Models\ThemeSetting;
 
 $currentUrl = request()->url();
-$isProductsMenu = str_contains($currentUrl, '/admin/products') || str_contains($currentUrl, '/admin/categories') || str_contains($currentUrl, '/admin/tags') || str_contains($currentUrl, '/admin/attributes') || str_contains($currentUrl, '/admin/reviews') || str_contains($currentUrl, '/admin/brands') || str_contains($currentUrl, '/admin/settings/product');
+$isProductsMenu = str_contains($currentUrl, '/admin/products') || str_contains($currentUrl, '/admin/categories') || str_contains($currentUrl, '/admin/tags') || str_contains($currentUrl, '/admin/attributes') || str_contains($currentUrl, '/admin/reviews') || str_contains($currentUrl, '/admin/brands') || str_contains($currentUrl, '/admin/settings/product') || str_contains($currentUrl, '/admin/volume-discounts');
 $isSettingsMenu = (str_contains($currentUrl, '/admin/settings') && ! str_contains($currentUrl, '/admin/settings/product') && ! str_contains($currentUrl, '/admin/settings/shipping')) || str_contains($currentUrl, '/admin/roles') || str_contains($currentUrl, '/admin/permissions');
 $isThemesMenu = str_contains($currentUrl, '/admin/themes');
 $isMarketingMenu = str_contains($currentUrl, '/admin/marketing') || str_contains($currentUrl, '/admin/coupons');
@@ -76,6 +76,9 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                         </a>
                         <a href="{{ route('admin.settings.product') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ str_contains($currentUrl, '/admin/settings/product') ? 'text-rose-400 bg-gray-600' : '' }}">
                             Product Settings
+                        </a>
+                        <a href="{{ route('admin.volume-discounts.index') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ str_contains($currentUrl, '/admin/volume-discounts') ? 'text-rose-400 bg-gray-600' : '' }}">
+                            Volume Discounts
                         </a>
                         <a href="{{ route('admin.media.index') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ str_contains($currentUrl, '/admin/media') ? 'text-rose-400 bg-gray-600' : '' }}">
                             <i class="fas fa-images mr-2"></i> Media Library

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UploadController;
+use App\Http\Controllers\Admin\VolumeDiscountController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -112,6 +113,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('contacts/{contact}/replied', [ContactController::class, 'markAsReplied'])->name('contacts.replied');
 
         // Volume Discounts
-        Route::get('volume-discounts', [\App\Http\Controllers\Admin\VolumeDiscountController::class, 'index'])->name('volume-discounts');
+        Route::get('volume-discounts', [VolumeDiscountController::class, 'index'])->name('volume-discounts.index');
+        Route::get('volume-discounts/products', [VolumeDiscountController::class, 'index'])->name('volume-discounts');
     });
 });
