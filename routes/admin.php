@@ -110,5 +110,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('contacts/{contact}', [ContactController::class, 'show'])->name('contacts.show');
         Route::delete('contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
         Route::post('contacts/{contact}/replied', [ContactController::class, 'markAsReplied'])->name('contacts.replied');
+
+        // Volume Discounts
+        Route::get('volume-discounts', [\App\Http\Controllers\Admin\VolumeDiscountController::class, 'index'])->name('volume-discounts');
     });
 });
