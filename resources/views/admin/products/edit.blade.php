@@ -37,7 +37,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Additional Categories</label>
                 <div class="flex flex-wrap gap-2 max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3">
                     @php
-                        $selectedCategoryIds = $product->categories->pluck('id')->toArray();
+                        $selectedCategoryIds = $product->categories()->pluck('categories.id')->toArray();
                     @endphp
                     @foreach($categories as $category)
                         <label class="inline-flex items-center">
