@@ -18,10 +18,15 @@ class ProductController extends BaseController
 
         // Cache for 5 minutes for better performance
         $products = Cache::remember($cacheKey, 300, function () use ($request) {
-            $query = Product::with(['category', 'brandModel'])->where('is_active', true);
+            $query = Product::with(['category', 'brandModel', 'categories:id,name,slug'])->where('is_active', true);
 
             if ($request->category_id) {
-                $query->where('category_id', $request->category_id);
+                $query->where(function ($q) use ($request) {
+                    $q->where('category_id', $request->category_id)
+                        ->orWhereHas('categories', function ($sq) use ($request) {
+                            $sq->where('categories.id', $request->category_id);
+                        });
+                });
             }
 
             if ($request->featured) {
@@ -139,7 +144,7 @@ class ProductController extends BaseController
         $cacheKey = 'product_'.$slug;
 
         $product = Cache::remember($cacheKey, 600, function () use ($slug) {
-            return Product::with(['category', 'brandModel', 'attributeValues.attribute'])->where('slug', $slug)->first();
+            return Product::with(['category', 'brandModel', 'attributeValues.attribute', 'categories:id,name,slug'])->where('slug', $slug)->first();
         });
 
         if (! $product) {
