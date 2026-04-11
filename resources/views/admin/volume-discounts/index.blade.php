@@ -148,15 +148,14 @@ function renderTiers() {
                     </select>
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Active</label>
+                    <input type="checkbox" class="w-5 h-5" ${tier.is_active ? 'checked' : ''} 
+                        onchange="updateTier(${index}, 'is_active', this.checked)">
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
                     <input type="number" class="w-full px-3 py-2 border rounded-lg" value="${tier.sort_order || 0}" 
                         onchange="updateTier(${index}, 'sort_order', this.value)" min="0">
-                </div>
-                <div class="col-span-2">
-                    <label class="flex items-center gap-2">
-                        <input type="checkbox" ${tier.is_active ? 'checked' : ''} onchange="updateTier(${index}, 'is_active', this.checked)">
-                        <span class="text-sm text-gray-700">Active</span>
-                    </label>
                 </div>
             </div>
         </div>

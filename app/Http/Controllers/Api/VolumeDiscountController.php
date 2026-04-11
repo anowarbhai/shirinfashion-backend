@@ -13,7 +13,6 @@ class VolumeDiscountController extends BaseController
 
         $discounts = VolumeDiscount::with(['freeProduct:id,name,slug,image'])
             ->where('product_id', $productId)
-            ->where('is_active', true)
             ->orderBy('sort_order')
             ->orderBy('quantity')
             ->get();
@@ -36,27 +35,20 @@ class VolumeDiscountController extends BaseController
 
         $productId = $validated['product_id'];
 
-        // Delete existing tiers not in the new list
-        $newQuantities = collect($validated['tiers'])->pluck('quantity')->toArray();
-        VolumeDiscount::where('product_id', $productId)
-            ->whereNotIn('quantity', $newQuantities)
-            ->delete();
+        // Delete ALL existing tiers first, then create new ones
+        VolumeDiscount::where('product_id', $productId)->delete();
 
-        // Upsert tiers
+        // Create new tiers
         foreach ($validated['tiers'] as $tier) {
-            VolumeDiscount::updateOrCreate(
-                [
-                    'product_id' => $productId,
-                    'quantity' => $tier['quantity'],
-                ],
-                [
-                    'flat_price' => $tier['flat_price'],
-                    'label' => $tier['label'],
-                    'free_product_id' => $tier['free_product_id'] ?? null,
-                    'is_active' => $tier['is_active'] ?? true,
-                    'sort_order' => $tier['sort_order'] ?? 0,
-                ]
-            );
+            VolumeDiscount::create([
+                'product_id' => $productId,
+                'quantity' => $tier['quantity'],
+                'flat_price' => $tier['flat_price'],
+                'label' => $tier['label'],
+                'free_product_id' => $tier['free_product_id'] ?? null,
+                'is_active' => $tier['is_active'] ?? true,
+                'sort_order' => $tier['sort_order'] ?? 0,
+            ]);
         }
 
         return $this->success(VolumeDiscount::where('product_id', $productId)->orderBy('quantity')->get(), 'Volume discounts saved successfully');
