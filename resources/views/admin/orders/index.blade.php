@@ -65,7 +65,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 </tr>
             </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($orders as $order)
+                    @foreach($orders as $order)
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4">
                             <input type="checkbox" name="ids[]" value="{{ $order->id }}" class="order-checkbox w-4 h-4" onchange="updateBulkDeleteBtn()">
@@ -104,13 +104,11 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                                 <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 hover:text-blue-800" title="View">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                <a href="{{ route('admin.orders.destroy', $order) }}" 
+                                   class="text-red-600 hover:text-red-800"
+                                   onclick="return confirm('Are you sure you want to delete this order?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -165,13 +163,11 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                     <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 hover:text-blue-800 p-2">
                         <i class="fas fa-eye"></i>
                     </a>
-                    <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:text-red-800 p-2">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </form>
+                    <a href="{{ route('admin.orders.destroy', $order) }}" 
+                                   class="text-red-600 hover:text-red-800 p-2"
+                                   onclick="return confirm('Are you sure?')">
+                                <i class="fas fa-trash"></i>
+                                </a>
                 </div>
             </div>
         </div>
