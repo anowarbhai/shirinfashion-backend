@@ -310,16 +310,9 @@ class ProductController extends Controller
 
         $file = $request->file('csv_file');
         $handle = fopen($file->getPathname(), 'r');
-        $headerRow = fgetcsv($handle);
 
-        // Check if first row has headers like "Name", "SKU" etc
-        $hasHeaders = in_array(strtolower($headerRow[0] ?? ''), ['name', 'product name', 'id']);
-        if ($hasHeaders) {
-            // First row is headers, skip
-        } else {
-            // No headers, rewind and start from beginning
-            rewind($handle);
-        }
+        // Always skip the first row (headers)
+        fgetcsv($handle);
 
         $imported = 0;
         $skipped = 0;
