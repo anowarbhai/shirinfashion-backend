@@ -46,7 +46,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
     </div>
     <!-- Desktop Table View -->
     <div class="hidden md:block overflow-x-auto">
-        <form id="bulkDeleteForm" method="POST" action="{{ route('admin.orders.bulk-delete') }}">
+        <form id="bulkDeleteForm" method="POST" action="/admin/delete-orders-bulk">
             @csrf
             <table class="w-full">
                 <thead class="bg-gray-50">
