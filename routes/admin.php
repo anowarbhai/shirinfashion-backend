@@ -21,6 +21,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/profile/password', [\App\Http\Controllers\Admin\ProfileController::class, 'changePassword'])->name('profile.password');
 
         Route::resource('products', ProductController::class);
+        Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
+        Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
 
         Route::post('/upload/image', [UploadController::class, 'image'])->name('upload.image');
         Route::post('/upload/images', [UploadController::class, 'images'])->name('upload.images');

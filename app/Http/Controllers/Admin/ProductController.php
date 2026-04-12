@@ -236,4 +236,72 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully');
     }
+
+    public function export()
+    {
+        $products = Product::with('category')->get();
+
+        $headers = ['ID', 'Name', 'Slug', 'Category', 'Price', 'Sale Price', 'SKU', 'Stock', 'Status', 'Active'];
+        $rows = $products->map(function ($p) {
+            return [
+                $p->id,
+                $p->name,
+                $p->slug,
+                $p->category?->name ?? '',
+                $p->price,
+                $p->sale_price ?? '',
+                $p->sku ?? '',
+                $p->stock_quantity ?? 0,
+                $p->stock_status,
+                $p->is_active ? 'Yes' : 'No',
+            ];
+        });
+
+        $csvContent = implode(',', $headers)."\n";
+        foreach ($rows as $row) {
+            $csvContent .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', $v).'"', $row))."\n";
+        }
+
+        return response($csvContent)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="products_'.date('Y-m-d').'.csv"');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|mimes:csv,txt',
+        ]);
+
+        $file = $request->file('csv_file');
+        $handle = fopen($file->getPathname(), 'r');
+        fgetcsv($handle);
+
+        $imported = 0;
+        while (($row = fgetcsv($handle)) !== false) {
+            if (empty($row[1])) {
+                continue;
+            }
+
+            $category = \App\Models\Category::where('name', $row[2] ?? '')->first();
+
+            Product::updateOrCreate(
+                ['sku' => $row[6] ?? null],
+                [
+                    'name' => $row[1],
+                    'slug' => $row[2] ?? \Illuminate\Support\Str::slug($row[1]),
+                    'category_id' => $category?->id,
+                    'price' => $row[3] ?? 0,
+                    'sale_price' => $row[4] ?? null,
+                    'stock_quantity' => $row[7] ?? 0,
+                    'stock_status' => $row[8] ?? 'instock',
+                    'is_active' => ($row[9] ?? 'Yes') === 'Yes',
+                ]
+            );
+            $imported++;
+        }
+        fclose($handle);
+
+        return redirect()->route('admin.products.index')->with('success', "Imported {$imported} products successfully");
+    }
 }

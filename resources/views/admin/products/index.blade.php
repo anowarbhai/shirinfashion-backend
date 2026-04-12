@@ -26,10 +26,36 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 <i class="fas fa-search"></i>
             </button>
         </form>
-        <a href="{{ route('admin.products.create') }}" class="bg-rose-600 text-white px-6 py-2 rounded-lg hover:bg-rose-700 transition font-medium flex items-center gap-2 whitespace-nowrap">
-            <i class="fas fa-plus"></i>Add
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.products.export') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition font-medium flex items-center gap-2 whitespace-nowrap">
+                <i class="fas fa-download"></i>Export
+            </a>
+            <button type="button" onclick="document.getElementById('importModal').showModal()" class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition font-medium flex items-center gap-2 whitespace-nowrap">
+                <i class="fas fa-upload"></i>Import
+            </button>
+            <a href="{{ route('admin.products.create') }}" class="bg-rose-600 text-white px-6 py-2 rounded-lg hover:bg-rose-700 transition font-medium flex items-center gap-2 whitespace-nowrap">
+                <i class="fas fa-plus"></i>Add
+            </a>
+        </div>
     </div>
+    
+    <!-- Import Modal -->
+    <dialog id="importModal" class="modal p-6 rounded-lg shadow-xl border border-gray-200">
+        <div class="w-full max-w-md">
+            <h3 class="text-xl font-semibold mb-4">Import Products from CSV</h3>
+            <form method="POST" action="{{ route('admin.products.import') }}" enctype="multipart/form-data">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select CSV File</label>
+                    <input type="file" name="csv_file" accept=".csv" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="flex gap-2 justify-end">
+                    <button type="button" onclick="document.getElementById('importModal').close()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700">Import</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
     
     <!-- Desktop Table View -->
     <div class="hidden md:block overflow-x-auto">
