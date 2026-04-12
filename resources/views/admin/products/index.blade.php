@@ -43,6 +43,15 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
     <dialog id="importModal" class="modal p-6 rounded-lg shadow-xl border border-gray-200">
         <div class="w-full max-w-md">
             <h3 class="text-xl font-semibold mb-4">Import Products from CSV</h3>
+            <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-700 mb-2">
+                    <i class="fas fa-info-circle"></i> 
+                    Download the sample CSV to see the format. Fill in your product data and upload.
+                </p>
+                <a href="{{ route('admin.products.export') }}?sample=1" class="text-blue-600 underline text-sm hover:text-blue-800">
+                    <i class="fas fa-file-download"></i> Download Sample CSV
+                </a>
+            </div>
             <form method="POST" action="{{ route('admin.products.import') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-4">

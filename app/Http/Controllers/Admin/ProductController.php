@@ -237,8 +237,24 @@ class ProductController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully');
     }
 
-    public function export()
+    public function export(Request $request)
     {
+        if ($request->has('sample')) {
+            $headers = ['Name', 'Slug', 'Category', 'Price', 'Sale Price', 'SKU', 'Stock', 'Status', 'Active', 'Image URL', 'Description', 'Short Description', 'Brand', 'Tags (comma separated)'];
+            $sampleData = [
+                ['Sample Product Name', 'sample-product', 'Category Name', '500', '450', 'SKU001', '10', 'instock', 'Yes', 'https://example.com/image.jpg', 'Description here', 'Short desc', 'Brand Name', 'Tag1, Tag2'],
+            ];
+
+            $csvContent = implode(',', $headers)."\n";
+            foreach ($sampleData as $row) {
+                $csvContent .= implode(',', array_map(fn ($v) => '"'.str_replace('"', '""', $v).'"', $row))."\n";
+            }
+
+            return response($csvContent)
+                ->header('Content-Type', 'text/csv')
+                ->header('Content-Disposition', 'attachment; filename="products_sample.csv"');
+        }
+
         $products = Product::with('category', 'attributeValues.attribute', 'tags')->get();
         $assetUrl = config('app.url').'/storage/';
 
