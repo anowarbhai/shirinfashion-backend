@@ -240,11 +240,21 @@ class ProductController extends Controller
     public function export()
     {
         $products = Product::with('category', 'attributeValues.attribute', 'tags')->get();
+        $assetUrl = config('app.url').'/storage/';
 
         $headers = ['ID', 'Name', 'Slug', 'Category', 'Price', 'Sale Price', 'SKU', 'Stock', 'Status', 'Active', 'Image', 'Description', 'Short Description', 'Brand', 'Tags', 'Attributes'];
-        $rows = $products->map(function ($p) {
+        $rows = $products->map(function ($p) use ($assetUrl) {
             $tags = $p->tags->pluck('name')->join(', ');
             $attrs = $p->attributeValues->map(fn ($av) => $av->attribute?->name.': '.$av->value)->join(', ');
+
+            $imageUrl = '';
+            if ($p->image) {
+                if (str_starts_with($p->image, 'http')) {
+                    $imageUrl = $p->image;
+                } else {
+                    $imageUrl = $assetUrl.$p->image;
+                }
+            }
 
             return [
                 $p->id,
@@ -257,7 +267,7 @@ class ProductController extends Controller
                 $p->stock_quantity ?? 0,
                 $p->stock_status,
                 $p->is_active ? 'Yes' : 'No',
-                $p->image ?? '',
+                $imageUrl,
                 strip_tags($p->description ?? '') ?? '',
                 strip_tags($p->short_description ?? '') ?? '',
                 $p->brand ?? '',
