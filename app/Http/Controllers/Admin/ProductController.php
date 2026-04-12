@@ -240,7 +240,7 @@ class ProductController extends Controller
     public function export(Request $request)
     {
         if ($request->has('sample')) {
-            $headers = ['Name', 'Slug', 'Category', 'Price', 'Sale Price', 'SKU', 'Stock', 'Status', 'Active', 'Image URL', 'Description', 'Short Description', 'Brand', 'Tags (comma separated)'];
+            $headers = ['Name', 'Slug', 'Category', 'Price', 'Sale Price', 'SKU', 'Stock', 'Status', 'Active', 'Image URL', 'Description', 'Short Description', 'Brand', 'Tags'];
             $sampleData = [
                 ['Sample Product Name', 'sample-product', 'Category Name', '500', '450', 'SKU001', '10', 'instock', 'Yes', 'https://example.com/image.jpg', 'Description here', 'Short desc', 'Brand Name', 'Tag1, Tag2'],
             ];
@@ -310,49 +310,81 @@ class ProductController extends Controller
 
         $file = $request->file('csv_file');
         $handle = fopen($file->getPathname(), 'r');
-        fgetcsv($handle);
+        $headerRow = fgetcsv($handle);
+
+        // Check if first row has headers like "Name", "SKU" etc
+        $hasHeaders = in_array(strtolower($headerRow[0] ?? ''), ['name', 'product name', 'id']);
+        if ($hasHeaders) {
+            // First row is headers, skip
+        } else {
+            // No headers, rewind and start from beginning
+            rewind($handle);
+        }
 
         $imported = 0;
+        $skipped = 0;
+
         while (($row = fgetcsv($handle)) !== false) {
-            if (empty($row[1])) {
+            // Skip if name is empty
+            if (empty($row[0])) {
+                $skipped++;
+
                 continue;
             }
 
-            $category = \App\Models\Category::where('name', $row[3] ?? '')->first();
-
-            $product = Product::updateOrCreate(
-                ['sku' => $row[6] ?? null],
-                [
-                    'name' => $row[1],
-                    'slug' => $row[2] ?: \Illuminate\Support\Str::slug($row[1]),
-                    'category_id' => $category?->id,
-                    'price' => (float) ($row[4] ?? 0),
-                    'sale_price' => ! empty($row[5]) ? (float) $row[5] : null,
-                    'stock_quantity' => (int) ($row[7] ?? 0),
-                    'stock_status' => $row[8] ?? 'instock',
-                    'is_active' => ($row[9] ?? 'Yes') === 'Yes',
-                    'image' => $row[10] ?? null,
-                    'description' => $row[11] ?? '',
-                    'short_description' => $row[12] ?? '',
-                    'brand' => $row[13] ?? null,
-                ]
-            );
-
-            // Handle tags
-            if (! empty($row[14])) {
-                $tagNames = explode(',', $row[14]);
-                $tagIds = [];
-                foreach ($tagNames as $tagName) {
-                    $tag = \App\Models\Tag::firstOrCreate(['name' => trim($tagName)]);
-                    $tagIds[] = $tag->id;
+            try {
+                $category = null;
+                if (! empty($row[2])) {
+                    $category = \App\Models\Category::where('name', 'like', '%'.$row[2].'%')->first();
                 }
-                $product->tags()->sync($tagIds);
-            }
 
-            $imported++;
+                $product = Product::updateOrCreate(
+                    ['sku' => $row[5] ?? null],
+                    [
+                        'name' => $row[0],
+                        'slug' => $row[1] ?: \Illuminate\Support\Str::slug($row[0]),
+                        'category_id' => $category?->id,
+                        'price' => (float) ($row[3] ?? 0),
+                        'sale_price' => ! empty($row[4]) ? (float) $row[4] : null,
+                        'stock_quantity' => (int) ($row[6] ?? 0),
+                        'stock_status' => strtolower($row[7] ?? 'instock') === 'out of stock' ? 'outofstock' : 'instock',
+                        'is_active' => in_array(strtolower($row[8] ?? 'yes'), ['yes', 'active', '1', 'true']),
+                        'image' => $row[9] ?? null,
+                        'description' => $row[10] ?? '',
+                        'short_description' => $row[11] ?? '',
+                        'brand' => $row[12] ?? null,
+                    ]
+                );
+
+                // Handle tags
+                if (! empty($row[13])) {
+                    $tagNames = array_filter(array_map('trim', explode(',', $row[13])));
+                    $tagIds = [];
+                    foreach ($tagNames as $tagName) {
+                        if (! empty($tagName)) {
+                            $tag = \App\Models\Tag::firstOrCreate(['name' => $tagName]);
+                            $tagIds[] = $tag->id;
+                        }
+                    }
+                    if (! empty($tagIds)) {
+                        $product->tags()->sync($tagIds);
+                    }
+                }
+
+                $imported++;
+            } catch (\Exception $e) {
+                $skipped++;
+
+                continue;
+            }
         }
         fclose($handle);
 
-        return redirect()->route('admin.products.index')->with('success', "Imported {$imported} products successfully");
+        $message = "Imported {$imported} products.";
+        if ($skipped > 0) {
+            $message .= " Skipped {$skipped} rows.";
+        }
+
+        return redirect()->route('admin.products.index')->with('success', $message);
     }
 }
