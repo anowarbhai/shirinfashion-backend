@@ -104,11 +104,12 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                                 <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 hover:text-blue-800" title="View">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('admin.orders.destroy', $order) }}" 
-                                   class="text-red-600 hover:text-red-800"
-                                   onclick="return confirm('Are you sure you want to delete this order?')">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                                <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure?')">
+                        @csrf
+                        <button type="submit" class="text-red-600 hover:text-red-800" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
                             </div>
                         </td>
                     </tr>
@@ -163,11 +164,12 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                     <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 hover:text-blue-800 p-2">
                         <i class="fas fa-eye"></i>
                     </a>
-                    <a href="{{ route('admin.orders.destroy', $order) }}" 
-                                   class="text-red-600 hover:text-red-800 p-2"
-                                   onclick="return confirm('Are you sure?')">
-                                <i class="fas fa-trash"></i>
-                                </a>
+                    <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure?')">
+                        @csrf
+                        <button type="submit" class="text-red-600 hover:text-red-800" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

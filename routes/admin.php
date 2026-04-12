@@ -30,6 +30,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('media/upload', [\App\Http\Controllers\Admin\MediaController::class, 'upload'])->name('media.upload');
         Route::get('media/debug', [\App\Http\Controllers\Admin\MediaController::class, 'debug'])->name('media.debug');
 
+        Route::match(['POST', 'DELETE'], 'delete-order/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('orders.destroy');
         Route::post('delete-orders-bulk', [\App\Http\Controllers\Admin\OrderController::class, 'bulkDelete'])->name('orders.bulk-delete');
         Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
         Route::put('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
