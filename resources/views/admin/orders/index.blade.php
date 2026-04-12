@@ -113,9 +113,9 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                             </div>
                         </td>
                     </tr>
-                    @empty
+                    @if($orders->isEmpty())
                     <tr><td colspan="9" class="px-6 py-8 text-center text-gray-500">No orders found</td></tr>
-                    @endforelse
+                    @endif
                 </tbody>
             </table>
         </form>
@@ -173,9 +173,9 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 </div>
             </div>
         </div>
-        @empty
-        <div class="p-8 text-center text-gray-500">No orders found</div>
-        @endforelse
+            @if($orders->isEmpty())
+            <div class="p-8 text-center text-gray-500">No orders found</div>
+            @endif
     </div>
     
     @if($orders->hasPages())
