@@ -31,6 +31,12 @@ Route::prefix('auth')->group(function () {
         Route::post('/avatar', [AuthController::class, 'updateAvatar']);
         Route::post('/link-orders', [AuthController::class, 'linkOrders']);
         Route::post('/set-password', [AuthController::class, 'setPassword']);
+
+        Route::get('/addresses', [AuthController::class, 'getAddresses']);
+        Route::post('/addresses', [AuthController::class, 'saveAddress']);
+        Route::put('/addresses/{id}', [AuthController::class, 'updateAddress']);
+        Route::delete('/addresses/{id}', [AuthController::class, 'deleteAddress']);
+        Route::post('/addresses/{id}/default', [AuthController::class, 'setDefaultAddress']);
     });
 });
 

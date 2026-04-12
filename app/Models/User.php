@@ -9,7 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -44,6 +44,11 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class);
+    }
+
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_user');
@@ -54,6 +59,7 @@ class User extends Authenticatable
         if (is_string($role)) {
             return $this->roles->contains('slug', $role);
         }
+
         return $this->roles->contains($role);
     }
 
@@ -65,7 +71,7 @@ class User extends Authenticatable
         }
 
         // Load roles with permissions if not loaded
-        if (!$this->relationLoaded('roles')) {
+        if (! $this->relationLoaded('roles')) {
             $this->load('roles.permissions');
         }
 
@@ -101,6 +107,7 @@ class User extends Authenticatable
                 return true;
             }
         }
+
         return false;
     }
 }

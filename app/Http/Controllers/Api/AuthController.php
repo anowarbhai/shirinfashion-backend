@@ -303,4 +303,86 @@ class AuthController extends BaseController
 
         return $this->success(null, 'Password reset successfully');
     }
+
+    public function getAddresses(Request $request)
+    {
+        $addresses = $request->user()->addresses()->orderByDesc('is_default')->orderByDesc('id')->get();
+
+        return $this->success($addresses);
+    }
+
+    public function saveAddress(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string',
+            'city' => 'nullable|string|max:100',
+            'district' => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:20',
+            'is_default' => 'nullable|boolean',
+        ]);
+
+        $user = $request->user();
+
+        if (! empty($validated['is_default'])) {
+            $user->addresses()->update(['is_default' => false]);
+        }
+
+        $address = $user->addresses()->create($validated);
+
+        if ($validated['is_default'] ?? false) {
+            $user->update(['address' => $address->full_address]);
+        }
+
+        return $this->success($address, 'Address saved successfully');
+    }
+
+    public function updateAddress(Request $request, int $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string',
+            'city' => 'nullable|string|max:100',
+            'district' => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:20',
+            'is_default' => 'nullable|boolean',
+        ]);
+
+        $address = $request->user()->addresses()->findOrFail($id);
+
+        if (! empty($validated['is_default'])) {
+            $request->user()->addresses()->where('id', '!=', $id)->update(['is_default' => false]);
+        }
+
+        $address->update($validated);
+
+        if ($validated['is_default'] ?? false) {
+            $request->user()->update(['address' => $address->full_address]);
+        }
+
+        return $this->success($address, 'Address updated successfully');
+    }
+
+    public function deleteAddress(Request $request, int $id)
+    {
+        $address = $request->user()->addresses()->findOrFail($id);
+        $address->delete();
+
+        return $this->success(null, 'Address deleted successfully');
+    }
+
+    public function setDefaultAddress(Request $request, int $id)
+    {
+        $user = $request->user();
+
+        $user->addresses()->update(['is_default' => false]);
+        $address = $user->addresses()->findOrFail($id);
+        $address->update(['is_default' => true]);
+
+        $user->update(['address' => $address->full_address]);
+
+        return $this->success($address, 'Default address updated');
+    }
 }
