@@ -239,10 +239,13 @@ class ProductController extends Controller
 
     public function export()
     {
-        $products = Product::with('category')->get();
+        $products = Product::with('category', 'attributeValues.attribute', 'tags')->get();
 
-        $headers = ['ID', 'Name', 'Slug', 'Category', 'Price', 'Sale Price', 'SKU', 'Stock', 'Status', 'Active'];
+        $headers = ['ID', 'Name', 'Slug', 'Category', 'Price', 'Sale Price', 'SKU', 'Stock', 'Status', 'Active', 'Image', 'Description', 'Short Description', 'Brand', 'Tags', 'Attributes'];
         $rows = $products->map(function ($p) {
+            $tags = $p->tags->pluck('name')->join(', ');
+            $attrs = $p->attributeValues->map(fn ($av) => $av->attribute?->name.': '.$av->value)->join(', ');
+
             return [
                 $p->id,
                 $p->name,
@@ -254,6 +257,12 @@ class ProductController extends Controller
                 $p->stock_quantity ?? 0,
                 $p->stock_status,
                 $p->is_active ? 'Yes' : 'No',
+                $p->image ?? '',
+                strip_tags($p->description ?? '') ?? '',
+                strip_tags($p->short_description ?? '') ?? '',
+                $p->brand ?? '',
+                $tags,
+                $attrs,
             ];
         });
 
@@ -283,21 +292,37 @@ class ProductController extends Controller
                 continue;
             }
 
-            $category = \App\Models\Category::where('name', $row[2] ?? '')->first();
+            $category = \App\Models\Category::where('name', $row[3] ?? '')->first();
 
-            Product::updateOrCreate(
+            $product = Product::updateOrCreate(
                 ['sku' => $row[6] ?? null],
                 [
                     'name' => $row[1],
-                    'slug' => $row[2] ?? \Illuminate\Support\Str::slug($row[1]),
+                    'slug' => $row[2] ?: \Illuminate\Support\Str::slug($row[1]),
                     'category_id' => $category?->id,
-                    'price' => $row[3] ?? 0,
-                    'sale_price' => $row[4] ?? null,
+                    'price' => $row[4] ?? 0,
+                    'sale_price' => $row[5] ?? null,
                     'stock_quantity' => $row[7] ?? 0,
                     'stock_status' => $row[8] ?? 'instock',
                     'is_active' => ($row[9] ?? 'Yes') === 'Yes',
+                    'image' => $row[10] ?? null,
+                    'description' => $row[11] ?? '',
+                    'short_description' => $row[12] ?? '',
+                    'brand' => $row[13] ?? null,
                 ]
             );
+
+            // Handle tags
+            if (! empty($row[14])) {
+                $tagNames = explode(',', $row[14]);
+                $tagIds = [];
+                foreach ($tagNames as $tagName) {
+                    $tag = \App\Models\Tag::firstOrCreate(['name' => trim($tagName)]);
+                    $tagIds[] = $tag->id;
+                }
+                $product->tags()->sync($tagIds);
+            }
+
             $imported++;
         }
         fclose($handle);
