@@ -332,7 +332,7 @@ class ProductController extends Controller
                 }
 
                 $product = Product::updateOrCreate(
-                    ['sku' => $row[5] ?? null],
+                    ['sku' => ! empty($row[5]) ? $row[5] : null],
                     [
                         'name' => $row[0],
                         'slug' => $row[1] ?: \Illuminate\Support\Str::slug($row[0]),
@@ -367,8 +367,6 @@ class ProductController extends Controller
                 $imported++;
             } catch (\Exception $e) {
                 $skipped++;
-
-                continue;
             }
         }
         fclose($handle);
