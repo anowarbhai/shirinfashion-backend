@@ -348,7 +348,14 @@ function bulkDelete() {
     }
     
     if (confirm(`Are you sure you want to delete ${checkedCount} order(s)? This action cannot be undone.`)) {
-        document.getElementById('bulkDeleteForm').submit();
+        // Remove any _method hidden input
+        const existingMethod = document.querySelector('input[name="_method"]');
+        if (existingMethod) existingMethod.remove();
+        
+        const form = document.getElementById('bulkDeleteForm');
+        form.method = 'POST';
+        form.action = '/admin/delete-orders-bulk';
+        form.submit();
     }
 }
 </script>
