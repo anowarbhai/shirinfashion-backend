@@ -176,7 +176,6 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
             @if($orders->isEmpty())
             <div class="p-8 text-center text-gray-500">No orders found</div>
             @endif
-        </div>
     </div>
     
     @if($orders->hasPages())
