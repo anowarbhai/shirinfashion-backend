@@ -58,16 +58,21 @@ class CartController extends BaseController
                 return null;
             }
 
-            // Use cart custom price if set and not null (from volume discount), otherwise product price
-            // Convert to float explicitly
-            $price = (! is_null($cart->price) && $cart->price !== '')
-                ? floatval($cart->price)
-                : floatval($cart->product->current_price);
+            $isVolumeTier = ! is_null($cart->price) && $cart->price !== '' && $cart->volume_tier_id;
 
-            // Debug: log what we're using
-            error_log("Cart ID: {$cart->id}, Stored price value: ".json_encode($cart->price).", Final price: {$price}");
+            if ($isVolumeTier) {
+                // Tier flat_price IS the total for the tier quantity - use directly!
+                $price = floatval($cart->price);
+                $subtotal = $price; // NOT price × quantity!
+                $displayQuantity = $cart->quantity; // Show actual item count
+            } else {
+                // Regular price - calculate normally
+                $price = floatval($cart->product->current_price);
+                $subtotal = $cart->quantity * $price;
+                $displayQuantity = $cart->quantity;
+            }
 
-            // Get volume tier if set
+            // Get volume tier info for display
             $volumeTier = null;
             if ($cart->volume_tier_id && $cart->product->volumeDiscounts) {
                 $volumeTier = $cart->product->volumeDiscounts->firstWhere('id', $cart->volume_tier_id);
@@ -76,7 +81,7 @@ class CartController extends BaseController
             return [
                 'id' => $cart->id,
                 'product_id' => $cart->product_id,
-                'quantity' => $cart->quantity,
+                'quantity' => $displayQuantity,
                 'attributes' => $cart->attributes,
                 'volume_tier' => $volumeTier,
                 'product' => [
@@ -87,7 +92,7 @@ class CartController extends BaseController
                     'price' => $price,
                     'stock_quantity' => $cart->product->stock_quantity,
                 ],
-                'subtotal' => $cart->quantity * $price,
+                'subtotal' => $subtotal,
             ];
         })->filter();
 
@@ -147,7 +152,8 @@ class CartController extends BaseController
             })
             ->first();
 
-        if ($cart) {
+        if ($cart && empty($validated['volume_tier_id'])) {
+            // Only merge regular items, NOT volume tier items
             $newQuantity = $cart->quantity + $validated['quantity'];
 
             if ($product->stock_quantity < $newQuantity) {
@@ -156,8 +162,13 @@ class CartController extends BaseController
 
             $cart->update([
                 'quantity' => $newQuantity,
-                'price' => $validated['price'] ?? null,
-                'volume_tier_id' => $validated['volume_tier_id'] ?? null,
+            ]);
+        } elseif ($cart && ! empty($validated['volume_tier_id'])) {
+            // Volume tier: DO NOT merge - just update price/tier but keep quantity from tier
+            $cart->update([
+                'quantity' => $validated['quantity'],
+                'price' => $validated['price'],
+                'volume_tier_id' => $validated['volume_tier_id'],
             ]);
         } else {
             Cart::create([
