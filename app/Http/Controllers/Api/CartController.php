@@ -56,6 +56,9 @@ class CartController extends BaseController
                 return null;
             }
 
+            // Use custom price if set (from volume discount), otherwise use product price
+            $price = $cart->price ?? $cart->product->current_price;
+
             return [
                 'id' => $cart->id,
                 'product_id' => $cart->product_id,
@@ -66,10 +69,10 @@ class CartController extends BaseController
                     'name' => $cart->product->name,
                     'slug' => $cart->product->slug,
                     'image' => $cart->product->image,
-                    'price' => $cart->product->current_price,
+                    'price' => $price,
                     'stock_quantity' => $cart->product->stock_quantity,
                 ],
-                'subtotal' => $cart->quantity * $cart->product->current_price,
+                'subtotal' => $cart->quantity * $price,
             ];
         })->filter();
 
@@ -92,6 +95,8 @@ class CartController extends BaseController
             'attributes.*.id' => 'required|integer',
             'attributes.*.name' => 'required|string',
             'attributes.*.value' => 'required|string',
+            'price' => 'nullable|numeric|min:0',
+            'volume_tier_id' => 'nullable|integer',
         ]);
 
         // Use a simpler query to get only needed fields
@@ -134,7 +139,11 @@ class CartController extends BaseController
                 return $this->error('Insufficient stock for requested quantity', 400);
             }
 
-            $cart->update(['quantity' => $newQuantity]);
+            $cart->update([
+                'quantity' => $newQuantity,
+                'price' => $validated['price'] ?? null,
+                'volume_tier_id' => $validated['volume_tier_id'] ?? null,
+            ]);
         } else {
             Cart::create([
                 'user_id' => $userId,
@@ -142,6 +151,8 @@ class CartController extends BaseController
                 'product_id' => $validated['product_id'],
                 'quantity' => $validated['quantity'],
                 'attributes' => $attributes,
+                'price' => $validated['price'] ?? null,
+                'volume_tier_id' => $validated['volume_tier_id'] ?? null,
             ]);
         }
 
