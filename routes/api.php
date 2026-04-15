@@ -72,6 +72,12 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::post('/orders/guest', [OrderController::class, 'store']);
+
+Route::get('/debug-orders', function () {
+    $order = \App\Models\Order::select('id', 'customer_phone', 'customer_success_rate', 'customer_cancel_rate', 'customer_total_orders')->latest()->first();
+
+    return response()->json($order);
+});
 Route::post('/orders/incomplete', [OrderController::class, 'saveIncomplete']);
 
 Route::get('/shipping', [ShippingController::class, 'index']);
