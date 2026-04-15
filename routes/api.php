@@ -75,8 +75,12 @@ Route::post('/orders/guest', [OrderController::class, 'store']);
 
 Route::get('/debug-orders', function () {
     $order = \App\Models\Order::select('id', 'customer_phone', 'customer_success_rate', 'customer_cancel_rate', 'customer_total_orders')->latest()->first();
+    $apiUrl = config('app.fraud_checker_api_url');
 
-    return response()->json($order);
+    return response()->json([
+        'order' => $order,
+        'api_url' => $apiUrl,
+    ]);
 });
 Route::post('/orders/incomplete', [OrderController::class, 'saveIncomplete']);
 
