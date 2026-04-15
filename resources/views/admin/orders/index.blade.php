@@ -197,12 +197,20 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 <span id="modalPhone" class="font-medium text-lg"></span>
             </div>
             <div id="rateSummary" class="hidden mb-4">
-                <div class="flex items-center justify-between flex-wrap gap-4">
-                    <div class="flex items-center gap-2">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
                         <span id="rateStatusBadge" class="px-3 py-1 rounded-full text-sm font-medium"></span>
-                        <span class="text-gray-600 font-medium">Score: <span id="rateScore" class="font-bold text-lg"></span></span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-600">Score:</span>
+                            <span id="rateScore" class="text-xl font-bold text-rose-600"></span>
+                        </div>
                     </div>
-                    <div class="flex gap-6 text-center">
+                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                        <div id="rateProgress" class="h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 text-center">Delivery Success Rate</p>
+                </div>
+                <div class="flex gap-6 text-center mt-4">
                         <div>
                             <div class="text-2xl font-bold" id="rateTotal">0</div>
                             <div class="text-xs text-gray-500">মোট</div>
@@ -276,7 +284,10 @@ function checkCustomerRate(phone) {
             statusBadge.className = 'px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800';
         }
         
-        document.getElementById('rateScore').textContent = (data.score || 0) + '%';
+        const score = data.score || 0;
+        document.getElementById('rateScore').textContent = score + '%';
+        document.getElementById('rateProgress').style.width = score + '%';
+        document.getElementById('rateProgress').className = 'h-full transition-all duration-500 ' + (score >= 70 ? 'bg-green-500' : score >= 40 ? 'bg-yellow-500' : 'bg-red-500');
         document.getElementById('rateTotal').textContent = data.total_parcel || 0;
         document.getElementById('rateSuccess').textContent = data.success_parcel || 0;
         document.getElementById('rateCancel').textContent = data.cancel_parcel || 0;
