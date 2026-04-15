@@ -138,7 +138,8 @@ class OrderController extends BaseController
 
             // Use cart's custom price if set (from volume discount), otherwise product price
             $price = $cart->price ?? $product->current_price;
-            $itemSubtotal = $price * $cart->quantity;
+            // Volume tier flat_price IS the total, not price × quantity
+            $itemSubtotal = floatval($price);
 
             // Get volume tier info if set
             $volumeTierId = $cart->volume_tier_id;
