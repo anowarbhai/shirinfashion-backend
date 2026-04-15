@@ -58,8 +58,10 @@ class CartController extends BaseController
                 return null;
             }
 
-            // Use custom price if set (from volume discount), otherwise use product price
-            $price = $cart->price ?? $cart->product->current_price;
+            // Use cart custom price if set and not null (from volume discount), otherwise product price
+            $price = (isset($cart->price) && $cart->price !== null)
+                ? (float) $cart->price
+                : (float) $cart->product->current_price;
 
             // Get volume tier if set
             $volumeTier = null;

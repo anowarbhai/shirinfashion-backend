@@ -20,6 +20,7 @@ class Cart extends Model
     protected $casts = [
         'quantity' => 'integer',
         'attributes' => 'array',
+        'price' => 'decimal:2',
     ];
 
     public function user(): BelongsTo
