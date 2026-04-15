@@ -200,29 +200,37 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
                         <span id="rateStatusBadge" class="px-3 py-1 rounded-full text-sm font-medium"></span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-gray-600">Score:</span>
-                            <span id="rateScore" class="text-xl font-bold text-rose-600"></span>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-green-600">Success Rate</span>
+                            <span id="rateScore" class="font-bold text-green-600"></span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                            <div id="rateProgressSuccess" class="h-full bg-green-500 transition-all duration-500" style="width: 0%"></div>
                         </div>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                        <div id="rateProgress" class="h-full transition-all duration-500" style="width: 0%"></div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-red-600">Cancel Rate</span>
+                            <span id="rateCancelDisplay" class="font-bold text-red-600"></span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                            <div id="rateProgressCancel" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
                     </div>
-                    <p class="text-xs text-gray-500 text-center">Delivery Success Rate</p>
-                </div>
                 <div class="flex gap-6 text-center mt-4">
-                        <div>
-                            <div class="text-2xl font-bold" id="rateTotal">0</div>
-                            <div class="text-xs text-gray-500">মোট</div>
-                        </div>
-                        <div>
-                            <div class="text-2xl font-bold text-green-600" id="rateSuccess">0</div>
-                            <div class="text-xs text-gray-500">সফল</div>
-                        </div>
-                        <div>
-                            <div class="text-2xl font-bold text-red-600" id="rateCancel">0</div>
-                            <div class="text-xs text-gray-500">বাতিল</div>
-                        </div>
+                    <div>
+                        <div class="text-2xl font-bold" id="rateTotal">0</div>
+                        <div class="text-xs text-gray-500">মোট</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-green-600" id="rateSuccess">0</div>
+                        <div class="text-xs text-gray-500">সফল</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-red-600" id="rateCancel">0</div>
+                        <div class="text-xs text-gray-500">বাতিল</div>
                     </div>
                 </div>
             </div>
@@ -285,9 +293,14 @@ function checkCustomerRate(phone) {
         }
         
         const score = data.score || 0;
+        const successRate = data.success_parcel || 0;
+        const total = data.total_parcel || 0;
+        const cancelRate = total > 0 ? ((data.cancel_parcel || 0) / total * 100) : 0;
+        
         document.getElementById('rateScore').textContent = score + '%';
-        document.getElementById('rateProgress').style.width = score + '%';
-        document.getElementById('rateProgress').className = 'h-full transition-all duration-500 ' + (score >= 70 ? 'bg-green-500' : score >= 40 ? 'bg-yellow-500' : 'bg-red-500');
+        document.getElementById('rateProgressSuccess').style.width = score + '%';
+        document.getElementById('rateCancelDisplay').textContent = cancelRate.toFixed(1) + '%';
+        document.getElementById('rateProgressCancel').style.width = cancelRate + '%';
         document.getElementById('rateTotal').textContent = data.total_parcel || 0;
         document.getElementById('rateSuccess').textContent = data.success_parcel || 0;
         document.getElementById('rateCancel').textContent = data.cancel_parcel || 0;
