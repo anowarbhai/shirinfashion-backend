@@ -16,6 +16,8 @@ class OrderItem extends Model
         'quantity',
         'subtotal',
         'attributes',
+        'volume_tier_id',
+        'volume_tier_label',
     ];
 
     protected $casts = [

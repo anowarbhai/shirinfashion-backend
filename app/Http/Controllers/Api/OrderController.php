@@ -136,8 +136,17 @@ class OrderController extends BaseController
                 return $this->error("Insufficient stock for {$product->name}", 400);
             }
 
-            $price = $product->current_price;
+            // Use cart's custom price if set (from volume discount), otherwise product price
+            $price = $cart->price ?? $product->current_price;
             $itemSubtotal = $price * $cart->quantity;
+
+            // Get volume tier info if set
+            $volumeTierId = $cart->volume_tier_id;
+            $volumeTierLabel = null;
+            if ($volumeTierId && $product->volumeDiscounts) {
+                $volumeTier = $product->volumeDiscounts->firstWhere('id', $volumeTierId);
+                $volumeTierLabel = $volumeTier?->label;
+            }
 
             $items[] = [
                 'product_id' => $product->id,
@@ -147,6 +156,8 @@ class OrderController extends BaseController
                 'quantity' => $cart->quantity,
                 'subtotal' => $itemSubtotal,
                 'attributes' => $cart->attributes,
+                'volume_tier_id' => $volumeTierId,
+                'volume_tier_label' => $volumeTierLabel,
             ];
 
             $subtotal += $itemSubtotal;
