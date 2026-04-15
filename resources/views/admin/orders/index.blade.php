@@ -197,10 +197,20 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 <span id="modalPhone" class="font-medium text-lg"></span>
             </div>
             <div id="rateSummary" class="hidden mb-4">
-                <div class="space-y-4">
+<div class="space-y-4">
                     <div class="flex items-center justify-between">
                         <span id="rateStatusBadge" class="px-3 py-1 rounded-full text-sm font-medium"></span>
+                        <span id="rateScore" class="font-bold text-lg"></span>
                     </div>
+                    <div class="flex h-4 rounded-full overflow-hidden">
+                        <div id="rateProgressSuccess" class="h-full bg-green-500 transition-all duration-500" style="width: 0%"></div>
+                        <div id="rateProgressCancel" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-green-600">Success: <span id="rateSuccessLabel">0%</span></span>
+                        <span class="text-red-600">Cancel: <span id="rateCancelLabel">0%</span></span>
+                    </div>
+                </div>
                     <div>
                         <div class="flex justify-between text-sm mb-1">
                             <span class="text-green-600">Success Rate</span>
@@ -293,14 +303,16 @@ function checkCustomerRate(phone) {
         }
         
         const score = data.score || 0;
-        const successRate = data.success_parcel || 0;
         const total = data.total_parcel || 0;
         const cancelRate = total > 0 ? ((data.cancel_parcel || 0) / total * 100) : 0;
+        const successRate = total > 0 ? ((data.success_parcel || 0) / total * 100) : 0;
         
         document.getElementById('rateScore').textContent = score + '%';
-        document.getElementById('rateProgressSuccess').style.width = score + '%';
-        document.getElementById('rateCancelDisplay').textContent = cancelRate.toFixed(1) + '%';
+        document.getElementById('rateScore').className = score >= 70 ? 'font-bold text-lg text-green-600' : score >= 40 ? 'font-bold text-lg text-yellow-500' : 'font-bold text-lg text-red-600';
+        document.getElementById('rateProgressSuccess').style.width = successRate + '%';
         document.getElementById('rateProgressCancel').style.width = cancelRate + '%';
+        document.getElementById('rateSuccessLabel').textContent = successRate.toFixed(1) + '%';
+        document.getElementById('rateCancelLabel').textContent = cancelRate.toFixed(1) + '%';
         document.getElementById('rateTotal').textContent = data.total_parcel || 0;
         document.getElementById('rateSuccess').textContent = data.success_parcel || 0;
         document.getElementById('rateCancel').textContent = data.cancel_parcel || 0;
