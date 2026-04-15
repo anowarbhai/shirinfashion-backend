@@ -509,8 +509,8 @@ class OrderController extends BaseController
 
         try {
             $client = new \GuzzleHttp\Client;
-            $response = $client->post($apiUrl, [
-                'json' => ['phone' => $phone, 'key' => $apiKey],
+            $response = $client->get($apiUrl, [
+                'query' => ['phone' => $phone, 'key' => $apiKey],
                 'timeout' => 10,
             ]);
             $data = json_decode($response->getBody(), true);
