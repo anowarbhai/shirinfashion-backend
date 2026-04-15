@@ -76,11 +76,12 @@ Route::post('/orders/guest', [OrderController::class, 'store']);
 Route::get('/debug-rate', function () {
     $phone = request('phone', '01717571788');
     $apiUrl = config('app.fraud_checker_api_url');
+    $apiKey = config('app.fraud_checker_api_key');
 
     try {
         $client = new \GuzzleHttp\Client;
-        $response = $client->post($apiUrl, [
-            'json' => ['phone' => $phone],
+        $response = $client->get($apiUrl, [
+            'query' => ['phone' => $phone, 'key' => $apiKey],
             'timeout' => 10,
         ]);
         $data = json_decode($response->getBody(), true);
