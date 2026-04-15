@@ -59,9 +59,13 @@ class CartController extends BaseController
             }
 
             // Use cart custom price if set and not null (from volume discount), otherwise product price
-            $price = (isset($cart->price) && $cart->price !== null)
-                ? (float) $cart->price
-                : (float) $cart->product->current_price;
+            // Convert to float explicitly
+            $price = (! is_null($cart->price) && $cart->price !== '')
+                ? floatval($cart->price)
+                : floatval($cart->product->current_price);
+
+            // Debug: log what we're using
+            error_log("Cart ID: {$cart->id}, Stored price value: ".json_encode($cart->price).", Final price: {$price}");
 
             // Get volume tier if set
             $volumeTier = null;

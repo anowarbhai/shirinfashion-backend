@@ -32,4 +32,9 @@ class Cart extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function volumeTier()
+    {
+        return $this->belongsTo(\App\Models\VolumeDiscount::class, 'volume_tier_id');
+    }
 }
