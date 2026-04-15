@@ -314,14 +314,17 @@ function checkCustomerRate(phone, orderId) {
         if (orderId) {
             const rateCell = document.getElementById('rateCell-' + orderId);
             if (rateCell) {
-                const progressBar = rateCell.querySelector('div');
+                // Find inner div with rounded-full class (the progress bar)
+                const progressBar = rateCell.querySelector('.rounded-full');
                 if (progressBar) {
-                    progressBar.className = 'h-full rounded-full ' + (score >= 70 ? 'bg-green-500' : score >= 40 ? 'bg-yellow-500' : 'bg-red-500');
+                    progressBar.className = 'h-full ' + (score >= 70 ? 'bg-green-500' : score >= 40 ? 'bg-yellow-500' : 'bg-red-500');
                     progressBar.style.width = score + '%';
                 }
-                const btn = rateCell.querySelector('button');
-                if (btn) {
-                    btn.className = 'text-xs ' + (score >= 70 ? 'text-green-600' : score >= 40 ? 'text-yellow-600' : 'text-red-600');
+                // Update percentage text
+                const span = rateCell.querySelector('span');
+                if (span) {
+                    span.textContent = score + '%';
+                    span.className = 'text-xs font-medium ' + (score >= 70 ? 'text-green-600' : score >= 40 ? 'text-yellow-600' : 'text-red-600');
                 }
                 // Save to database
                 fetch('/admin/orders/' + orderId + '/update-rate', {
