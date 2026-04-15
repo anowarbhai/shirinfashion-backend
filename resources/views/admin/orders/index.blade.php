@@ -95,9 +95,14 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                         <span class="text-xs block">{{ \Carbon\Carbon::parse($order->created_at)->setTimezone($timezone)->format($timeFormat) }}</span>
                     </td>
                     <td class="px-6 py-4">
-                        <button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}')" class="bg-rose-100 text-rose-700 px-3 py-1 rounded text-xs hover:bg-rose-200">
-                            View Rate
-                        </button>
+                        <div id="rateCell-{{ $order->id }}" class="flex items-center gap-2">
+                            <div class="w-16 h-2 rounded-full bg-gray-200 overflow-hidden">
+                                <div class="h-full bg-gray-400" style="width: 0%"></div>
+                            </div>
+                            <button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}')" class="text-xs text-gray-400 hover:text-rose-600">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
                     </td>
                         <td class="px-6 py-4">
                             <div class="flex gap-2">
@@ -158,7 +163,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
 
             <!-- Actions -->
             <div class="flex items-center justify-between">
-                <button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}')" class="bg-rose-100 text-rose-700 px-3 py-2 rounded-lg text-xs font-medium hover:bg-rose-200">
+                <button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}', {{ $order->id }})" class="bg-rose-100 text-rose-700 px-3 py-2 rounded-lg text-xs font-medium hover:bg-rose-200">
                     View Rate
                 </button>
                 <div class="flex items-center gap-2">
@@ -245,7 +250,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
 </div>
 
 <script>
-function checkCustomerRate(phone) {
+function checkCustomerRate(phone, orderId) {
     document.getElementById('modalPhone').textContent = phone;
     document.getElementById('rateModal').classList.remove('hidden');
     document.getElementById('rateSummary').classList.add('hidden');
@@ -298,6 +303,22 @@ function checkCustomerRate(phone) {
         document.getElementById('rateTotal').textContent = data.total_parcel || 0;
         document.getElementById('rateSuccess').textContent = data.success_parcel || 0;
         document.getElementById('rateCancel').textContent = data.cancel_parcel || 0;
+        
+        // Update in-table rate cell if orderId provided
+        if (orderId) {
+            const rateCell = document.getElementById('rateCell-' + orderId);
+            if (rateCell) {
+                const progressBar = rateCell.querySelector('div');
+                if (progressBar) {
+                    progressBar.className = 'h-full rounded-full ' + (score >= 70 ? 'bg-green-500' : score >= 40 ? 'bg-yellow-500' : 'bg-red-500');
+                    progressBar.style.width = score + '%';
+                }
+                const btn = rateCell.querySelector('button');
+                if (btn) {
+                    btn.className = 'text-xs ' + (score >= 70 ? 'text-green-600' : score >= 40 ? 'text-yellow-600' : 'text-red-600');
+                }
+            }
+        }
         
         const response = data.response || {};
         const courierNames = {
