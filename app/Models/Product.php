@@ -83,6 +83,11 @@ class Product extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function volumeDiscounts(): HasMany
+    {
+        return $this->hasMany(VolumeDiscount::class, 'product_id')->where('is_active', true)->orderBy('quantity');
+    }
+
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);

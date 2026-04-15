@@ -38,6 +38,8 @@ class CartController extends BaseController
 
         $carts = Cart::with(['product' => function ($query) {
             $query->select('id', 'name', 'slug', 'image', 'price', 'sale_price', 'stock_quantity', 'is_active', 'category_id');
+        }, 'product.volumeDiscounts' => function ($query) {
+            $query->where('is_active', true)->orderBy('quantity');
         }])
             ->where(function ($query) use ($userId, $sessionId) {
                 if ($userId) {
@@ -59,11 +61,18 @@ class CartController extends BaseController
             // Use custom price if set (from volume discount), otherwise use product price
             $price = $cart->price ?? $cart->product->current_price;
 
+            // Get volume tier if set
+            $volumeTier = null;
+            if ($cart->volume_tier_id && $cart->product->volumeDiscounts) {
+                $volumeTier = $cart->product->volumeDiscounts->firstWhere('id', $cart->volume_tier_id);
+            }
+
             return [
                 'id' => $cart->id,
                 'product_id' => $cart->product_id,
                 'quantity' => $cart->quantity,
                 'attributes' => $cart->attributes,
+                'volume_tier' => $volumeTier,
                 'product' => [
                     'id' => $cart->product->id,
                     'name' => $cart->product->name,
