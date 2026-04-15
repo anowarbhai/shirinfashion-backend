@@ -99,7 +99,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                             <div class="w-16 h-2 rounded-full bg-gray-200 overflow-hidden">
                                 <div class="h-full bg-gray-400" style="width: 0%"></div>
                             </div>
-                            <button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}')" class="text-xs text-gray-400 hover:text-rose-600">
+                            <button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}', {{ $order->id }})" class="text-xs text-gray-400 hover:text-rose-600">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
