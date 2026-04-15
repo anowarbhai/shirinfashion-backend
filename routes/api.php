@@ -73,14 +73,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/orders/guest', [OrderController::class, 'store']);
 
-Route::get('/debug-orders', function () {
-    $order = \App\Models\Order::select('id', 'customer_phone', 'customer_success_rate', 'customer_cancel_rate', 'customer_total_orders')->latest()->first();
+Route::get('/debug-rate', function () {
+    $phone = request('phone', '01717571788');
     $apiUrl = config('app.fraud_checker_api_url');
 
-    return response()->json([
-        'order' => $order,
-        'api_url' => $apiUrl,
-    ]);
+    try {
+        $client = new \GuzzleHttp\Client;
+        $response = $client->post($apiUrl, [
+            'json' => ['phone' => $phone],
+            'timeout' => 10,
+        ]);
+        $data = json_decode($response->getBody(), true);
+
+        return response()->json(['success' => true, 'data' => $data]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()]);
+    }
 });
 Route::post('/orders/incomplete', [OrderController::class, 'saveIncomplete']);
 
