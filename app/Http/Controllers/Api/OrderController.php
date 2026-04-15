@@ -501,9 +501,14 @@ class OrderController extends BaseController
 
     private function getCustomerRateData(string $phone): ?array
     {
+        $apiUrl = config('app.fraud_checker_api_url');
+        if (! $apiUrl) {
+            return null;
+        }
+
         try {
             $client = new \GuzzleHttp\Client;
-            $response = $client->post(config('services.fraud_checker.url'), [
+            $response = $client->post($apiUrl, [
                 'json' => ['phone' => $phone],
                 'timeout' => 10,
             ]);

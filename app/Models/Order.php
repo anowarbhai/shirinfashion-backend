@@ -33,6 +33,9 @@ class Order extends Model
         'delivery_method',
         'transaction_id',
         'notes',
+        'customer_success_rate',
+        'customer_cancel_rate',
+        'customer_total_orders',
     ];
 
     protected $casts = [
