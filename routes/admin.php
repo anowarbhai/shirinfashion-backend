@@ -37,6 +37,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::match(['POST', 'DELETE'], 'delete-order/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('orders.destroy');
         Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
         Route::put('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::post('orders/{order}/update-rate', [\App\Http\Controllers\Admin\OrderController::class, 'updateRate'])->name('orders.update-rate');
 
         Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
         Route::resource('tags', \App\Http\Controllers\Admin\TagController::class);

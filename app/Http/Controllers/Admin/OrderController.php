@@ -178,4 +178,42 @@ class OrderController extends Controller
 
         return redirect()->route('admin.orders.index')->with('success', count($orders).' order(s) deleted successfully');
     }
+
+    public function updateRate(Request $request, Order $order)
+    {
+        $phone = $request->input('phone') ?? $order->customer_phone;
+
+        $apiUrl = config('app.fraud_checker_api_url');
+        $apiKey = config('app.fraud_checker_api_key');
+
+        if (! $apiUrl || ! $apiKey) {
+            return response()->json(['error' => 'API not configured'], 400);
+        }
+
+        try {
+            $client = new \GuzzleHttp\Client;
+            $response = $client->get($apiUrl, [
+                'query' => ['phone' => $phone, 'key' => $apiKey],
+                'timeout' => 10,
+            ]);
+            $data = json_decode($response->getBody(), true);
+
+            if ($data && isset($data['score'])) {
+                $total = $data['total_parcel'] ?? 0;
+                $cancelRate = $total > 0 ? round(($data['cancel_parcel'] ?? 0) / $total * 100) : 0;
+
+                $order->update([
+                    'customer_success_rate' => $data['score'],
+                    'customer_cancel_rate' => $cancelRate,
+                    'customer_total_orders' => $total,
+                ]);
+
+                return response()->json(['success' => true, 'rate' => $data['score']]);
+            }
+
+            return response()->json(['error' => 'No data returned'], 400);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

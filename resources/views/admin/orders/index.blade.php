@@ -310,7 +310,7 @@ function checkCustomerRate(phone, orderId) {
         document.getElementById('rateSuccess').textContent = data.success_parcel || 0;
         document.getElementById('rateCancel').textContent = data.cancel_parcel || 0;
         
-        // Update in-table rate cell if orderId provided
+        // Update in-table rate cell and save to DB if orderId provided
         if (orderId) {
             const rateCell = document.getElementById('rateCell-' + orderId);
             if (rateCell) {
@@ -323,6 +323,15 @@ function checkCustomerRate(phone, orderId) {
                 if (btn) {
                     btn.className = 'text-xs ' + (score >= 70 ? 'text-green-600' : score >= 40 ? 'text-yellow-600' : 'text-red-600');
                 }
+                // Save to database
+                fetch('/admin/orders/' + orderId + '/update-rate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ phone: document.getElementById('modalPhone').textContent })
+                });
             }
         }
         
