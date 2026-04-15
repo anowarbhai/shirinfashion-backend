@@ -232,6 +232,8 @@ class CartController extends BaseController
     {
         $validated = $request->validate([
             'quantity' => 'required|integer|min:1',
+            'price' => 'nullable|numeric|min:0',
+            'volume_tier_id' => 'nullable|integer',
         ]);
 
         $product = $cart->product;
@@ -240,7 +242,17 @@ class CartController extends BaseController
             return $this->error('Insufficient stock', 400);
         }
 
-        $cart->update(['quantity' => $validated['quantity']]);
+        $updateData = ['quantity' => $validated['quantity']];
+
+        // Update price if volume tier changed
+        if (isset($validated['price'])) {
+            $updateData['price'] = $validated['price'];
+        }
+        if (isset($validated['volume_tier_id'])) {
+            $updateData['volume_tier_id'] = $validated['volume_tier_id'];
+        }
+
+        $cart->update($updateData);
 
         return $this->success(null, 'Cart updated');
     }
