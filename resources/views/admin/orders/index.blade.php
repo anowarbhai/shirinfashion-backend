@@ -95,10 +95,16 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                         <span class="text-xs block">{{ \Carbon\Carbon::parse($order->created_at)->setTimezone($timezone)->format($timeFormat) }}</span>
                     </td>
                     <td class="px-6 py-4">
-                        <div id="rateCell-{{ $order->id }}" class="flex items-center gap-2">
+                        @php
+                        $rate = $order->customer_success_rate ?? -1;
+                        $colorClass = $rate >= 70 ? 'bg-green-500' : ($rate >= 40 ? 'bg-yellow-500' : ($rate >= 0 ? 'bg-red-500' : 'bg-gray-400'));
+                        $textClass = $rate >= 70 ? 'text-green-600' : ($rate >= 40 ? 'text-yellow-600' : ($rate >= 0 ? 'text-red-600' : 'text-gray-400'));
+                        @endphp
+                        <div class="flex items-center gap-2">
                             <div class="w-16 h-2 rounded-full bg-gray-200 overflow-hidden">
-                                <div class="h-full bg-gray-400" style="width: 0%"></div>
+                                <div class="h-full {{ $colorClass }}" style="width: {{ max(0, $rate) }}%"></div>
                             </div>
+                            <span class="text-xs font-medium {{ $textClass }}">{{ $order->customer_success_rate ?? 0 }}%</span>
                             <button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}', {{ $order->id }})" class="text-xs text-gray-400 hover:text-rose-600">
                                 <i class="fas fa-sync-alt"></i>
                             </button>

@@ -229,6 +229,16 @@ class OrderController extends BaseController
             'notes' => $validated['notes'] ?? null,
         ]);
 
+        // Save customer rate data
+        $rateData = $this->getCustomerRateData($validated['customer_phone']);
+        if ($rateData) {
+            $order->update([
+                'customer_success_rate' => $rateData['success_rate'],
+                'customer_cancel_rate' => $rateData['cancel_rate'],
+                'customer_total_orders' => $rateData['total_orders'],
+            ]);
+        }
+
         // Delete incomplete orders older than 30 minutes with the same phone number
         $thirtyMinutesAgo = now()->subMinutes(30);
         Order::where('status', 'incomplete')
@@ -472,10 +482,45 @@ class OrderController extends BaseController
             'notes' => $validated['notes'] ?? null,
         ]);
 
+        // Save customer rate data
+        $rateData = $this->getCustomerRateData($validated['customer_phone']);
+        if ($rateData) {
+            $order->update([
+                'customer_success_rate' => $rateData['success_rate'],
+                'customer_cancel_rate' => $rateData['cancel_rate'],
+                'customer_total_orders' => $rateData['total_orders'],
+            ]);
+        }
+
         foreach ($items as $item) {
             OrderItem::create(array_merge($item, ['order_id' => $order->id]));
         }
 
         return $this->success($order->load('items'), 'Incomplete order saved');
+    }
+
+    private function getCustomerRateData(string $phone): ?array
+    {
+        try {
+            $client = new \GuzzleHttp\Client;
+            $response = $client->post(config('services.fraud_checker.url'), [
+                'json' => ['phone' => $phone],
+                'timeout' => 10,
+            ]);
+            $data = json_decode($response->getBody(), true);
+            if ($data && isset($data['score'])) {
+                $total = $data['total_parcel'] ?? 0;
+
+                return [
+                    'success_rate' => $data['score'] ?? 0,
+                    'cancel_rate' => $total > 0 ? round(($data['cancel_parcel'] ?? 0) / $total * 100) : 0,
+                    'total_orders' => $total,
+                ];
+            }
+        } catch (\Exception $e) {
+            return null;
+        }
+
+        return null;
     }
 }
