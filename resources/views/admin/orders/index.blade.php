@@ -211,24 +211,6 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                         <span class="text-red-600">Cancel: <span id="rateCancelLabel">0%</span></span>
                     </div>
                 </div>
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-green-600">Success Rate</span>
-                            <span id="rateScore" class="font-bold text-green-600"></span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                            <div id="rateProgressSuccess" class="h-full bg-green-500 transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-red-600">Cancel Rate</span>
-                            <span id="rateCancelDisplay" class="font-bold text-red-600"></span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                            <div id="rateProgressCancel" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                    </div>
                 <div class="flex gap-6 text-center mt-4">
                     <div>
                         <div class="text-2xl font-bold" id="rateTotal">0</div>
