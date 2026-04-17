@@ -4,27 +4,34 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckPermission
 {
-    public function handle(Request $request, Closure $next, $permission): Response
+    public function handle(Request $request, Closure $next, string $permission): Response
     {
-        if (!$request->user()) {
+        $user = Auth::user();
+
+        if (! $user) {
             return redirect('/admin/login');
         }
 
-        // Allow if is_admin
-        if ($request->user()->is_admin) {
+        // Super admin (is_super role) bypasses all permission checks
+        if ($user->isSuperAdmin()) {
             return $next($request);
         }
 
-        // Check if user has the specific permission
-        if (!$request->user()->hasPermission($permission)) {
+        // Check if user has the permission
+        if (! $user->hasPermission($permission)) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => 'Unauthorized'], 403);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized. You do not have permission: '.$permission,
+                ], 403);
             }
-            return redirect('/admin/dashboard')->with('error', 'You do not have permission to access this page.');
+
+            return back()->with('error', 'You do not have permission to access this section.');
         }
 
         return $next($request);
