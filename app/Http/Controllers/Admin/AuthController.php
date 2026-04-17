@@ -93,6 +93,10 @@ class AuthController extends Controller
         // If OTP is not enabled or user has no phone, login directly
         Auth::login($user);
         $request->session()->regenerate();
+
+        // Load roles with permissions for permission checks
+        $user->load('roles.permissions');
+
         Session::forget(['admin_otp_step', 'admin_otp_email', 'admin_otp_phone', 'admin_otp_user_id']);
 
         return redirect()->intended('/admin/dashboard');
@@ -119,9 +123,13 @@ class AuthController extends Controller
         $userId = Session::get('admin_otp_user_id');
         $user = \App\Models\User::find($userId);
 
-        if ($user && $user->is_admin) {
+        if ($user && ($user->is_admin || $user->roles()->exists())) {
             Auth::login($user);
             $request->session()->regenerate();
+
+            // Load roles with permissions
+            $user->load('roles.permissions');
+
             Session::forget(['admin_otp_step', 'admin_otp_email', 'admin_otp_phone', 'admin_otp_user_id']);
 
             return redirect()->intended('/admin/dashboard');
