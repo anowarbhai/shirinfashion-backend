@@ -56,8 +56,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Pages resource - put last so specific routes take precedence
         Route::resource('pages', \App\Http\Controllers\Admin\PageController::class);
-        Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
-        Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class);
+
+        // Role & Permission routes - protected by permission middleware
+        Route::middleware('permission:roles.view')->group(function () {
+            Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
+            Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class);
+        });
+
         Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
 
         Route::get('marketing/facebook', [\App\Http\Controllers\Admin\MarketingController::class, 'facebook'])->name('marketing.facebook');

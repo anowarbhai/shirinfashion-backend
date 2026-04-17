@@ -226,10 +226,12 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                             <i class="fas fa-user-shield w-4 mr-2"></i>
                             Roles
                         </a>
+                        @if($canRoles)
                         <a href="{{ route('admin.permissions.index') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ str_contains($currentUrl, '/admin/permissions') ? 'text-rose-400 bg-gray-600' : '' }}">
                             <i class="fas fa-key w-4 mr-2"></i>
                             Permissions
                         </a>
+                        @endif
                     </div>
                 </div>
             </nav>
