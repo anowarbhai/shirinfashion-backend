@@ -5,7 +5,12 @@ use Illuminate\Support\Facades\Auth;
 $currentUrl = request()->url();
 $user = Auth::user();
 
-// Check permissions
+// Load roles for permission checks
+if ($user) {
+    $user->load('roles.permissions');
+}
+
+// Check permissions - handles null user gracefully
 $canProducts = $user && ($user->isSuperAdmin() || $user->hasPermission('products.view'));
 $canOrders = $user && ($user->isSuperAdmin() || $user->hasPermission('orders.view'));
 $canCustomers = $user && ($user->isSuperAdmin() || $user->hasPermission('customers.view'));

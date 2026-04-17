@@ -63,25 +63,25 @@ class User extends Authenticatable
         return $this->roles->contains($role);
     }
 
-    public function hasPermission($permission)
+    public function hasPermission(string $permission): bool
     {
-        // Check if user is super admin (only via is_super role, NOT is_admin flag)
+        // Load roles with permissions if not loaded
+        if (! $this->relationLoaded('roles')) {
+            $this->load('roles.permissions');
+        }
+
+        // Super admin (is_super role) has all permissions
         foreach ($this->roles as $role) {
             if ($role->is_super) {
                 return true;
             }
         }
 
-        // Load roles with permissions if not loaded
-        if (! $this->relationLoaded('roles')) {
-            $this->load('roles.permissions');
-        }
-
         // Check if user has the permission through any role
         foreach ($this->roles as $role) {
             if ($role->relationLoaded('permissions')) {
                 foreach ($role->permissions as $perm) {
-                    if ($perm->slug === $permission || $perm->name === $permission) {
+                    if ($perm->slug === $permission) {
                         return true;
                     }
                 }
@@ -91,8 +91,18 @@ class User extends Authenticatable
         return false;
     }
 
-    public function isSuperAdmin()
+    public function hasAnyRole(): bool
     {
+        return $this->roles()->exists();
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        // Load roles if not loaded
+        if (! $this->relationLoaded('roles')) {
+            $this->load('roles');
+        }
+
         // Only check is_super roles, NOT is_admin flag
         foreach ($this->roles as $role) {
             if ($role->is_super) {
