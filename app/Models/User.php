@@ -65,21 +65,16 @@ class User extends Authenticatable
 
     public function hasPermission($permission)
     {
-        // Check if user is admin (backward compatibility)
-        if ($this->is_admin) {
-            return true;
+        // Check if user is super admin (only via is_super role, NOT is_admin flag)
+        foreach ($this->roles as $role) {
+            if ($role->is_super) {
+                return true;
+            }
         }
 
         // Load roles with permissions if not loaded
         if (! $this->relationLoaded('roles')) {
             $this->load('roles.permissions');
-        }
-
-        // Check if user is super admin
-        foreach ($this->roles as $role) {
-            if ($role->is_super) {
-                return true;
-            }
         }
 
         // Check if user has the permission through any role
@@ -98,10 +93,7 @@ class User extends Authenticatable
 
     public function isSuperAdmin()
     {
-        if ($this->is_admin) {
-            return true;
-        }
-
+        // Only check is_super roles, NOT is_admin flag
         foreach ($this->roles as $role) {
             if ($role->is_super) {
                 return true;
