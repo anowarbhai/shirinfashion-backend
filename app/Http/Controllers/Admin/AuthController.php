@@ -8,7 +8,6 @@ use App\Services\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 
@@ -67,14 +66,6 @@ class AuthController extends Controller
 
         // Check if OTP is required for admin login
         $smsSettings = SmsSetting::getSettings();
-
-        // Debug: Log the settings
-        \Log::info('SMS Settings', [
-            'is_active' => $smsSettings->is_active,
-            'admin_login_otp' => $smsSettings->admin_login_otp,
-            'user_phone' => $user->phone,
-            'api_key' => $smsSettings->api_key ? 'Set' : 'Not Set',
-        ]);
 
         if ($smsSettings->is_active && $smsSettings->admin_login_otp) {
             if (! $user->phone) {
