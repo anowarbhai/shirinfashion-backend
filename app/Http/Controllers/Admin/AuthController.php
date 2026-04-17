@@ -18,7 +18,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->otpService = new OtpService();
+        $this->otpService = new OtpService;
     }
 
     public function showLoginForm()
@@ -27,7 +27,7 @@ class AuthController extends Controller
         $otpStep = Session::get('admin_otp_step', false);
         $email = Session::get('admin_otp_email', '');
         $phone = Session::get('admin_otp_phone', '');
-        
+
         return view('admin.login', compact('otpStep', 'email', 'phone'));
     }
 
@@ -46,13 +46,20 @@ class AuthController extends Controller
 
         $user = \App\Models\User::where('email', $credentials['email'])->first();
 
-        if (!$user || !$user->is_admin) {
+        if (! $user) {
             throw ValidationException::withMessages([
                 'email' => 'Invalid admin credentials.',
             ]);
         }
 
-        if (!Hash::check($credentials['password'], $user->password)) {
+        // Check if user has admin access (is_admin OR has role)
+        if (! $user->is_admin && ! $user->hasRole()) {
+            throw ValidationException::withMessages([
+                'email' => 'Invalid admin credentials.',
+            ]);
+        }
+
+        if (! Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => 'Invalid admin credentials.',
             ]);
@@ -60,33 +67,33 @@ class AuthController extends Controller
 
         // Check if OTP is required for admin login
         $smsSettings = SmsSetting::getSettings();
-        
+
         // Debug: Log the settings
         \Log::info('SMS Settings', [
             'is_active' => $smsSettings->is_active,
             'admin_login_otp' => $smsSettings->admin_login_otp,
             'user_phone' => $user->phone,
-            'api_key' => $smsSettings->api_key ? 'Set' : 'Not Set'
+            'api_key' => $smsSettings->api_key ? 'Set' : 'Not Set',
         ]);
-        
+
         if ($smsSettings->is_active && $smsSettings->admin_login_otp) {
-            if (!$user->phone) {
+            if (! $user->phone) {
                 return redirect()->route('admin.login')->with('error', 'OTP is enabled but your account has no phone number. Please contact support.');
             }
-            
+
             // Send OTP
             $result = $this->otpService->generateAndSendOtp($user->phone, 'admin');
-            
+
             if ($result['success']) {
                 // Store user data in session for OTP verification
                 Session::put('admin_otp_step', true);
                 Session::put('admin_otp_email', $user->email);
                 Session::put('admin_otp_phone', $user->phone);
                 Session::put('admin_otp_user_id', $user->id);
-                
+
                 return redirect()->route('admin.login')->with('otp_sent', true);
             } else {
-                return redirect()->route('admin.login')->with('error', 'Failed to send OTP. Error: ' . ($result['message'] ?? 'Unknown error'));
+                return redirect()->route('admin.login')->with('error', 'Failed to send OTP. Error: '.($result['message'] ?? 'Unknown error'));
             }
         }
 
@@ -109,7 +116,7 @@ class AuthController extends Controller
 
         $isValid = $this->otpService->verifyOtp($phone, $otp, 'admin');
 
-        if (!$isValid) {
+        if (! $isValid) {
             throw ValidationException::withMessages([
                 'otp' => 'Invalid or expired OTP.',
             ]);
@@ -132,14 +139,14 @@ class AuthController extends Controller
 
     public function resendOtp(Request $request)
     {
-        if (!Session::get('admin_otp_step')) {
+        if (! Session::get('admin_otp_step')) {
             return redirect()->route('admin.login');
         }
 
         $phone = Session::get('admin_otp_phone');
-        
+
         $result = $this->otpService->generateAndSendOtp($phone, 'admin');
-        
+
         if ($result['success']) {
             return redirect()->route('admin.login')->with('otp_resent', true);
         }
@@ -153,7 +160,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         Session::forget(['admin_otp_step', 'admin_otp_email', 'admin_otp_phone', 'admin_otp_user_id']);
-        
+
         return redirect('/admin/login');
     }
 }
