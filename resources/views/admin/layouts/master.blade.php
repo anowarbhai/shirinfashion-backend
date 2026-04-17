@@ -1,7 +1,20 @@
 <?php
 use App\Models\ThemeSetting;
+use Illuminate\Support\Facades\Auth;
 
 $currentUrl = request()->url();
+$user = Auth::user();
+
+// Check permissions
+$canProducts = $user && ($user->isSuperAdmin() || $user->hasPermission('products.view'));
+$canOrders = $user && ($user->isSuperAdmin() || $user->hasPermission('orders.view'));
+$canCustomers = $user && ($user->isSuperAdmin() || $user->hasPermission('customers.view'));
+$canMarketing = $user && ($user->isSuperAdmin() || $user->hasPermission('marketing.view'));
+$canPages = $user && ($user->isSuperAdmin() || $user->hasPermission('pages.view'));
+$canUsers = $user && ($user->isSuperAdmin() || $user->hasPermission('users.view'));
+$canRoles = $user && ($user->isSuperAdmin() || $user->hasPermission('roles.view'));
+$canSettings = $user && ($user->isSuperAdmin() || $user->hasPermission('settings.view'));
+
 $isProductsMenu = str_contains($currentUrl, '/admin/products') || str_contains($currentUrl, '/admin/categories') || str_contains($currentUrl, '/admin/tags') || str_contains($currentUrl, '/admin/attributes') || str_contains($currentUrl, '/admin/reviews') || str_contains($currentUrl, '/admin/brands') || str_contains($currentUrl, '/admin/settings/product') || str_contains($currentUrl, '/admin/volume-discounts');
 $isSettingsMenu = (str_contains($currentUrl, '/admin/settings') && ! str_contains($currentUrl, '/admin/settings/product') && ! str_contains($currentUrl, '/admin/settings/shipping')) || str_contains($currentUrl, '/admin/roles') || str_contains($currentUrl, '/admin/permissions');
 $isThemesMenu = str_contains($currentUrl, '/admin/themes');
@@ -49,6 +62,7 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                     <span>Dashboard</span>
                 </a>
 
+                @if($canProducts)
                 <div class="relative">
                     <button onclick="toggleMenu('products-menu')" class="flex items-center w-full px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ $isProductsMenu ? 'bg-gray-700 text-rose-400' : '' }}">
                         <i class="fas fa-box w-6"></i>
@@ -85,11 +99,21 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                         </a>
                     </div>
                 </div>
+                @endif
                 
+                @if($canOrders)
                 <a href="{{ route('admin.orders.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ request()->is('admin/orders*') ? 'bg-gray-700 text-rose-400 border-l-4 border-rose-400' : '' }}">
                     <i class="fas fa-shopping-cart w-6"></i>
                     <span>Orders</span>
                 </a>
+                @endif
+
+                @if($canCustomers)
+                <a href="{{ route('admin.customers.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ request()->is('admin/customers*') ? 'bg-gray-700 text-rose-400 border-l-4 border-rose-400' : '' }}">
+                    <i class="fas fa-users w-6"></i>
+                    <span>Customers</span>
+                </a>
+                @endif
 
                 <div class="relative">
                     <button onclick="toggleMenu('marketing-menu')" class="flex items-center w-full px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ $isMarketingMenu ? 'bg-gray-700 text-rose-400' : '' }}">
