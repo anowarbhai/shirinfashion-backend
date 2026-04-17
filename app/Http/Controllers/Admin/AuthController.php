@@ -51,8 +51,10 @@ class AuthController extends Controller
             ]);
         }
 
-        // Check if user has admin access (is_admin OR has role)
-        if (! $user->is_admin && ! $user->hasRole()) {
+        // Check if user has admin access (is_admin OR has any role)
+        $hasRole = $user->roles()->exists();
+
+        if (! $user->is_admin && ! $hasRole) {
             throw ValidationException::withMessages([
                 'email' => 'Invalid admin credentials.',
             ]);
