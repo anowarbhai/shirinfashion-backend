@@ -221,8 +221,9 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                                 <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800" title="Delete">
+                                    <button type="submit" class="text-red-600 hover:text-red-800 flex items-center gap-1" title="Delete">
                                         <i class="fas fa-trash"></i>
+                                        <span class="text-xs">DELETE</span>
                                     </button>
                                 </form>
                             </div>
@@ -283,8 +284,9 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                     <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:text-red-800 p-2">
+                        <button type="submit" class="text-red-600 hover:text-red-800 p-2 flex items-center gap-1">
                             <i class="fas fa-trash"></i>
+                            <span class="text-xs">DELETE</span>
                         </button>
                     </form>
                 </div>
