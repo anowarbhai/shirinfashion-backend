@@ -67,6 +67,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status')->middleware('permission:orders.edit');
         Route::post('orders/{order}/update-rate', [\App\Http\Controllers\Admin\OrderController::class, 'updateRate'])->name('orders.update-rate')->middleware('permission:orders.edit');
 
+        // Order modal for AJAX
+        Route::get('orders/{order}/modal', [\App\Http\Controllers\Admin\OrderController::class, 'modal'])->name('orders.modal')->middleware('permission:orders.view');
+
         Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)
             ->middleware('permission:categories.view');
         Route::get('categories/create', [\App\Http\Controllers\Admin\CategoryController::class, 'create'])->name('categories.create')->middleware('permission:categories.create');

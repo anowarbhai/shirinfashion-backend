@@ -121,6 +121,39 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
+    public function modal(Order $order)
+    {
+        $order->load('items.product');
+
+        $generalSettings = \App\Models\GeneralSetting::getSettings();
+        $currencySymbol = $generalSettings->currency_symbol ?? '৳';
+
+        return response()->json([
+            'order' => [
+                'id' => $order->id,
+                'customer_name' => $order->customer_name,
+                'customer_phone' => $order->customer_phone,
+                'customer_email' => $order->customer_email,
+                'shipping_address' => $order->shipping_address,
+                'subtotal' => number_format($order->subtotal, 2),
+                'shipping_cost' => number_format($order->shipping_cost ?? 0, 2),
+                'discount' => number_format($order->discount ?? 0, 2),
+                'total' => number_format($order->total, 2),
+                'payment_status' => $order->payment_status,
+                'status' => $order->status,
+                'items' => $order->items->map(function ($item) {
+                    return [
+                        'product_name' => $item->product_name,
+                        'quantity' => $item->quantity,
+                        'price' => number_format($item->price, 2),
+                        'subtotal' => number_format($item->subtotal, 2),
+                    ];
+                })->toArray(),
+            ],
+            'currency_symbol' => $currencySymbol,
+        ]);
+    }
+
     public function updateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([

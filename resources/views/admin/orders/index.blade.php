@@ -19,6 +19,88 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
 @endphp
 
 @section('content')
+
+<!-- Order Detail Modal -->
+<div id="orderDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white">
+            <h3 class="text-lg font-semibold">Order Details <span id="modalOrderId" class="text-rose-600"></span></h3>
+            <button onclick="closeOrderModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6 space-y-4">
+            <!-- Customer Info -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-500">Customer Name</p>
+                    <p id="modalCustomerName" class="font-medium"></p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Phone</p>
+                    <p id="modalCustomerPhone" class="font-medium"></p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Email</p>
+                    <p id="modalCustomerEmail" class="font-medium"></p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Shipping Address</p>
+                    <p id="modalShippingAddress" class="font-medium"></p>
+                </div>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="border-t pt-4">
+                <h4 class="font-medium mb-2">Order Summary</h4>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Subtotal</span>
+                        <span id="modalSubtotal" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Shipping</span>
+                        <span id="modalShippingCost" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Discount</span>
+                        <span id="modalDiscount" class="font-medium text-green-600"></span>
+                    </div>
+                    <div class="flex justify-between text-lg font-bold border-t pt-2">
+                        <span>Total</span>
+                        <span id="modalTotal" class="text-rose-600"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment & Status -->
+            <div class="grid grid-cols-2 gap-4 border-t pt-4">
+                <div>
+                    <p class="text-sm text-gray-500 mb-1">Payment Status</p>
+                    <span id="modalPaymentStatus" class="px-2 py-1 rounded text-xs font-medium"></span>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 mb-1">Order Status</p>
+                    <select id="modalStatusSelect" onchange="updateOrderStatus()" class="w-full border rounded-lg px-3 py-2">
+                        <option value="incomplete">Incomplete</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Order Items -->
+            <div class="border-t pt-4">
+                <h4 class="font-medium mb-2">Order Items</h4>
+                <div id="modalOrderItems" class="space-y-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="bg-white rounded-xl shadow-sm">
     <div class="p-6 border-b border-gray-100 flex justify-between items-center flex-wrap gap-3">
         <form method="GET" class="flex items-center gap-3 flex-wrap relative">
@@ -112,9 +194,9 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                     </td>
                         <td class="px-6 py-4">
                             <div class="flex gap-2">
-                                <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 hover:text-blue-800" title="View">
+                                <button type="button" onclick="viewOrderModal({{ $order->id }})" class="text-blue-600 hover:text-blue-800" title="View">
                                     <i class="fas fa-eye"></i>
-                                </a>
+                                </button>
                                 <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
                                     @csrf
                                     @method('DELETE')
@@ -173,9 +255,9 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                     View Rate
                 </button>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 hover:text-blue-800 p-2">
+                    <button type="button" onclick="viewOrderModal({{ $order->id }})" class="text-blue-600 hover:text-blue-800 p-2">
                         <i class="fas fa-eye"></i>
-                    </a>
+                    </button>
                     <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure?')">
                         @csrf
                         @method('DELETE')
@@ -409,6 +491,89 @@ function bulkDelete() {
         form.method = 'POST';
         form.submit();
     }
+}
+
+function viewOrderModal(orderId) {
+    fetch(`/admin/orders/${orderId}/modal`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('modalOrderId').textContent = '#' + data.order.id;
+            document.getElementById('modalCustomerName').textContent = data.order.customer_name;
+            document.getElementById('modalCustomerPhone').textContent = data.order.customer_phone;
+            document.getElementById('modalCustomerEmail').textContent = data.order.customer_email || 'N/A';
+            document.getElementById('modalShippingAddress').textContent = data.order.shipping_address || 'N/A';
+            document.getElementById('modalTotal').textContent = data.currency_symbol + data.order.total;
+            document.getElementById('modalSubtotal').textContent = data.currency_symbol + data.order.subtotal;
+            document.getElementById('modalShippingCost').textContent = data.currency_symbol + (data.order.shipping_cost || 0);
+            document.getElementById('modalDiscount').textContent = data.currency_symbol + (data.order.discount || 0);
+            document.getElementById('modalPaymentStatus').textContent = data.order.payment_status;
+            document.getElementById('modalPaymentStatus').className = 'px-2 py-1 rounded text-xs font-medium ' + (data.order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700');
+            
+            const statusSelect = document.getElementById('modalStatusSelect');
+            statusSelect.innerHTML = '';
+            const statuses = ['incomplete', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+            statuses.forEach(status => {
+                const option = document.createElement('option');
+                option.value = status;
+                option.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                if (status === data.order.status) option.selected = true;
+                statusSelect.appendChild(option);
+            });
+            
+            document.getElementById('modalStatusSelect').dataset.orderId = orderId;
+            
+            const itemsContainer = document.getElementById('modalOrderItems');
+            itemsContainer.innerHTML = '';
+            data.order.items.forEach(item => {
+                itemsContainer.innerHTML += `
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <div>
+                            <p class="font-medium">${item.product_name}</p>
+                            <p class="text-sm text-gray-500">Qty: ${item.quantity} x ${data.currency_symbol}${item.price}</p>
+                        </div>
+                        <span class="font-medium">${data.currency_symbol}${item.subtotal}</span>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('orderDetailModal').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to load order details');
+        });
+}
+
+function closeOrderModal() {
+    document.getElementById('orderDetailModal').classList.add('hidden');
+}
+
+function updateOrderStatus() {
+    const select = document.getElementById('modalStatusSelect');
+    const orderId = select.dataset.orderId;
+    const newStatus = select.value;
+    
+    fetch(`/admin/orders/${orderId}/status`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Order status updated successfully');
+            location.reload();
+        } else {
+            alert(data.message || 'Failed to update status');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update order status');
+    });
 }
 </script>
 @endsection
