@@ -157,7 +157,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+            'status' => 'required|in:incomplete,pending,processing,shipped,delivered,cancelled',
         ]);
 
         $oldStatus = $order->status;
@@ -173,7 +173,11 @@ class OrderController extends Controller
         $smsService = new SmsService;
         $smsService->sendOrderStatusSms($order);
 
-        return redirect()->route('admin.orders.show', $order)->with('success', 'Order status updated');
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Order status updated successfully']);
+        }
+
+        return redirect()->back()->with('success', 'Order status updated');
     }
 
     public function destroy(Order $order)
