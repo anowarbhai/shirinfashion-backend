@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
@@ -79,8 +77,8 @@ class CheckoutController extends Controller
 
         foreach ($carts as $cart) {
             $product = $cart->product;
-            
-            if (!$product || !$product->is_active) {
+
+            if (! $product || ! $product->is_active) {
                 return back()->with('error', "Product {$product->name} is no longer available");
             }
 
@@ -90,7 +88,7 @@ class CheckoutController extends Controller
 
             $price = $product->current_price;
             $itemSubtotal = $price * $cart->quantity;
-            
+
             $items[] = [
                 'product_id' => $product->id,
                 'product_name' => $product->name,
@@ -127,6 +125,9 @@ class CheckoutController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
+        $roundRobin = app(RoundRobinService::class);
+        $roundRobin->assignOrder($order);
+
         foreach ($items as $item) {
             OrderItem::create(array_merge($item, ['order_id' => $order->id]));
         }
@@ -139,6 +140,6 @@ class CheckoutController extends Controller
             }
         })->delete();
 
-        return redirect('/api')->with('success', 'Order placed successfully! Order Number: ' . $order->order_number);
+        return redirect('/api')->with('success', 'Order placed successfully! Order Number: '.$order->order_number);
     }
 }

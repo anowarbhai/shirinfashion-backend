@@ -14,7 +14,12 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with('user');
+        $query = Order::with('user', 'moderator');
+
+        // Filter for moderators - they only see their assigned orders
+        if (auth()->user()->hasRole('moderator')) {
+            $query->where('moderator_id', auth()->id());
+        }
 
         if ($request->status) {
             $query->where('status', $request->status);
@@ -103,6 +108,10 @@ class OrderController extends Controller
             'notes' => $validated['notes'],
         ]);
 
+        // Auto-assign to moderator via round-robin
+        $roundRobin = app(\App\Services\RoundRobinService::class);
+        $roundRobin->assignOrder($order);
+
         foreach ($items as $item) {
             $order->items()->create($item);
         }
@@ -116,6 +125,11 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
+        // Check if moderator can access this order
+        if (auth()->user()->hasRole('moderator') && $order->moderator_id !== auth()->id()) {
+            abort(403, 'You can only view your assigned orders.');
+        }
+
         $order->load('items.product');
 
         return view('admin.orders.show', compact('order'));
@@ -123,6 +137,11 @@ class OrderController extends Controller
 
     public function modal(Order $order)
     {
+        // Check if moderator can access this order
+        if (auth()->user()->hasRole('moderator') && $order->moderator_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $order->load('items.product');
 
         $generalSettings = \App\Models\GeneralSetting::getSettings();
@@ -156,6 +175,11 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request, Order $order)
     {
+        // Check if moderator can update this order
+        if (auth()->user()->hasRole('moderator') && $order->moderator_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'status' => 'required|in:incomplete,pending,processing,shipped,delivered,cancelled',
         ]);
@@ -182,6 +206,11 @@ class OrderController extends Controller
 
     public function destroy(Order $order)
     {
+        // Check if moderator can delete this order
+        if (auth()->user()->hasRole('moderator') && $order->moderator_id !== auth()->id()) {
+            abort(403, 'You can only delete your assigned orders.');
+        }
+
         // Restore stock quantities for cancelled orders
         if ($order->status === 'cancelled' || $order->status === 'incomplete') {
             foreach ($order->items as $item) {
@@ -196,12 +225,14 @@ class OrderController extends Controller
 
     public function bulkDelete(Request $request)
     {
-        $validated = $request->validate([
-            'ids' => 'required|array|min:1',
-            'ids.*' => 'integer|exists:orders,id',
-        ]);
+        // Moderators can only bulk delete their own assigned orders
+        $query = Order::whereIn('id', $request->ids);
 
-        $orders = Order::whereIn('id', $validated['ids'])->get();
+        if (auth()->user()->hasRole('moderator')) {
+            $query->where('moderator_id', auth()->id());
+        }
+
+        $orders = $query->get();
 
         foreach ($orders as $order) {
             // Restore stock quantities for cancelled orders
