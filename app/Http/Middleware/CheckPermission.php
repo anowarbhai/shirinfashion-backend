@@ -49,6 +49,7 @@ class CheckPermission
             'orders.edit' => 'orders.edit',
             'orders.update' => 'orders.edit',
             'orders.destroy' => 'orders.delete',
+            'orders.update-status' => 'orders.edit',
 
             'customers.index' => 'customers.view',
             'customers.show' => 'customers.view',
