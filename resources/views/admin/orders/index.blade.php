@@ -555,6 +555,12 @@ function updateOrderStatus() {
     const orderId = select.dataset.orderId;
     const newStatus = select.value;
     
+    if (!orderId) {
+        alert('Error: Order ID is missing. Please reload and try again.');
+        console.log('Select dataset:', select.dataset);
+        return;
+    }
+    
     fetch(`/admin/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
