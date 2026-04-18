@@ -69,7 +69,11 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 text-gray-600">
-                        {{ $user->join_date ? $user->join_date->format('d M Y') : 'N/A' }}
+                        @if($user->join_date)
+                            {{ \Carbon\Carbon::parse($user->join_date)->format('d M Y') }}
+                        @else
+                            N/A
+                        @endif
                     </td>
                     <td class="px-6 py-4">
                         @if($user->status == 'active')
