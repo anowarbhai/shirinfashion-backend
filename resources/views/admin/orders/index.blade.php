@@ -148,7 +148,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
             </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($orders as $order)
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50" data-order-id="{{ $order->id }}">
                         <td class="px-6 py-4">
                             <input type="checkbox" name="ids[]" value="{{ $order->id }}" class="order-checkbox w-4 h-4" onchange="updateBulkDeleteBtn()">
                         </td>
@@ -164,7 +164,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                         </span>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="px-2 py-1 rounded text-xs @if($order->status === 'incomplete') bg-red-100 text-red-700 @elseif($order->status === 'pending') bg-yellow-100 text-yellow-700 @elseif($order->status === 'processing') bg-blue-100 text-blue-700 @elseif($order->status === 'shipped') bg-purple-100 text-purple-700 @elseif($order->status === 'delivered') bg-green-100 text-green-700 @else bg-gray-100 text-gray-700 @endif">
+                        <span class="order-status px-2 py-1 rounded text-xs @if($order->status === 'incomplete') bg-red-100 text-red-700 @elseif($order->status === 'pending') bg-yellow-100 text-yellow-700 @elseif($order->status === 'processing') bg-blue-100 text-blue-700 @elseif($order->status === 'shipped') bg-purple-100 text-purple-700 @elseif($order->status === 'delivered') bg-green-100 text-green-700 @else bg-gray-100 text-gray-700 @endif">
                             @if($order->status === 'incomplete')
                             ⚠️ Incomplete
                             @else
@@ -573,8 +573,20 @@ function updateOrderStatus() {
     })
     .then(response => {
         if (response.ok) {
-            alert('Status updated!');
-            location.reload();
+            // Close modal
+            document.getElementById('orderDetailModal').classList.add('hidden');
+            
+            // Update status in table without reload
+            const statusCell = document.querySelector(`tr[data-order-id="${orderId}"] .order-status`);
+            if (statusCell) {
+                statusCell.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                statusCell.className = 'px-2 py-1 rounded text-xs font-medium ' + 
+                    (newStatus === 'incomplete' ? 'bg-red-100 text-red-700' : 
+                     newStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' : 
+                     newStatus === 'processing' ? 'bg-blue-100 text-blue-700' : 
+                     newStatus === 'shipped' ? 'bg-purple-100 text-purple-700' : 
+                     newStatus === 'delivered' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700');
+            }
         } else {
             alert('Error: ' + response.status);
         }
