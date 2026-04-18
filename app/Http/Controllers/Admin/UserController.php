@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -13,40 +13,45 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->get('search');
-        $roleId = $request->get('role');
-        
-        $query = User::query();
-        
-        // Only show staff users (is_admin = 1 OR has roles), exclude customers
-        $query->where(function($q) {
-            $q->where('is_admin', 1)
-              ->orWhereHas('roles');
-        });
-        
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+        try {
+            $search = $request->get('search');
+            $roleId = $request->get('role');
+
+            $query = User::query();
+
+            // Only show staff users (is_admin = 1 OR has roles), exclude customers
+            $query->where(function ($q) {
+                $q->where('is_admin', 1)
+                    ->orWhereHas('roles');
             });
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
+                });
+            }
+
+            if ($roleId) {
+                $query->whereHas('roles', function ($q) use ($roleId) {
+                    $q->where('roles.id', $roleId);
+                });
+            }
+
+            $users = $query->orderBy('created_at', 'desc')->paginate(15);
+            $roles = Role::all();
+
+            return view('admin.users.index', compact('users', 'roles', 'search', 'roleId'));
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        
-        if ($roleId) {
-            $query->whereHas('roles', function($q) use ($roleId) {
-                $q->where('roles.id', $roleId);
-            });
-        }
-        
-        $users = $query->orderBy('created_at', 'desc')->paginate(15);
-        $roles = Role::all();
-        
-        return view('admin.users.index', compact('users', 'roles', 'search', 'roleId'));
     }
 
     public function create()
     {
         $roles = Role::all();
+
         return view('admin.users.create', compact('roles'));
     }
 
@@ -68,12 +73,12 @@ class UserController extends Controller
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        
-        if (!isset($validated['is_admin'])) {
+
+        if (! isset($validated['is_admin'])) {
             $validated['is_admin'] = 0;
         }
-        
-        if (!isset($validated['status'])) {
+
+        if (! isset($validated['status'])) {
             $validated['status'] = 'active';
         }
 
@@ -86,13 +91,14 @@ class UserController extends Controller
 
             return redirect()->route('admin.users.index')->with('success', 'User created successfully');
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Error: '.$e->getMessage());
         }
     }
 
     public function show(User $user)
     {
         $user->load('roles', 'orders');
+
         return view('admin.users.show', compact('user'));
     }
 
@@ -100,6 +106,7 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $user->load('roles');
+
         return view('admin.users.edit', compact('user', 'roles'));
     }
 
@@ -126,11 +133,11 @@ class UserController extends Controller
             unset($validated['password']);
         }
 
-        if (!isset($validated['is_admin'])) {
+        if (! isset($validated['is_admin'])) {
             $validated['is_admin'] = 0;
         }
-        
-        if (!isset($validated['status'])) {
+
+        if (! isset($validated['status'])) {
             $validated['status'] = 'active';
         }
 
@@ -148,6 +155,7 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
+
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully');
     }
 }
