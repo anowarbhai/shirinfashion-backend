@@ -509,8 +509,6 @@ function viewOrderModal(orderId) {
             document.getElementById('modalPaymentStatus').textContent = data.order.payment_status;
             document.getElementById('modalPaymentStatus').className = 'px-2 py-1 rounded text-xs font-medium ' + (data.order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700');
             
-            document.getElementById('modalStatusSelect').dataset.orderId = orderId;
-            
             const statusSelect = document.getElementById('modalStatusSelect');
             statusSelect.innerHTML = '';
             const statuses = ['incomplete', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'];
@@ -522,7 +520,9 @@ function viewOrderModal(orderId) {
                 statusSelect.appendChild(option);
             });
             
-            document.getElementById('modalStatusSelect').dataset.orderId = orderId;
+            // Set orderId AFTER populating options
+            statusSelect.setAttribute('data-order-id', orderId);
+            statusSelect.dataset.orderId = orderId;
             
             const itemsContainer = document.getElementById('modalOrderItems');
             itemsContainer.innerHTML = '';
@@ -552,20 +552,23 @@ function closeOrderModal() {
 
 function updateOrderStatus() {
     const select = document.getElementById('modalStatusSelect');
-    const orderId = select.dataset.orderId;
+    const orderId = select.getAttribute('data-order-id') || select.dataset.orderId;
     const newStatus = select.value;
     
-    console.log('Select dataset:', select.dataset);
-    console.log('Order ID from dataset:', orderId);
+    console.log('Select:', select);
+    console.log('All attributes:', select.attributes);
+    console.log('dataset:', select.dataset);
+    console.log('data-order-id attr:', select.getAttribute('data-order-id'));
+    console.log('Order ID:', orderId);
     console.log('New status:', newStatus);
     
-    if (!orderId || orderId === 'undefined') {
-        alert('Error: Order ID is missing or undefined. Please reload the page and try again. Dataset: ' + JSON.stringify(select.dataset));
+    if (!orderId || orderId === 'undefined' || orderId === '') {
+        alert('Error: Order ID is missing. Order ID: "' + orderId + '"');
         return;
     }
     
     const url = '/admin/orders/' + orderId + '/status';
-    console.log('URL:', url);
+    console.log('Full URL:', url);
     
     fetch(url, {
         method: 'PUT',
