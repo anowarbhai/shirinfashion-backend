@@ -6,12 +6,6 @@
 
 @section('content')
 <div class="max-w-6xl mx-auto">
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
         <div class="flex items-center gap-3">
             <h2 class="text-xl font-semibold">All Permissions</h2>

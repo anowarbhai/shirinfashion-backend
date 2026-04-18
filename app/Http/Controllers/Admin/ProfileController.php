@@ -16,6 +16,7 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
+        $user->load('roles');
 
         return view('admin.profile.show', compact('user'));
     }

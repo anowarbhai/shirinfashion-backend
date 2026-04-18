@@ -18,6 +18,14 @@
             </div>
 
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Slug</label>
+                <input type="text" name="slug" value="{{ old('slug') }}" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                    required placeholder="e.g., products.view">
+                <p class="text-xs text-gray-500 mt-1">Use dots: e.g., products.view, orders.edit</p>
+            </div>
+
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Group</label>
                 <select name="group" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500">
                     <option value="">Select Group</option>

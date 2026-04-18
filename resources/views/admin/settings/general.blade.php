@@ -5,11 +5,6 @@
 
 @section('content')
 <div class="bg-white rounded-xl shadow-sm p-6">
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
 
     <form method="POST" action="{{ route('admin.settings.general.update') }}">
         @csrf

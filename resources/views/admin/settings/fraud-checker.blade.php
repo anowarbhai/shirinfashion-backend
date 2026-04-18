@@ -8,12 +8,6 @@
     <!-- Settings Form -->
     <div class="bg-white rounded-xl shadow-sm p-6">
         <h3 class="font-semibold text-gray-700 mb-4">API Configuration</h3>
-        
-        @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            {{ session('success') }}
-        </div>
-        @endif
 
         <form method="POST" action="{{ route('admin.settings.fraud-checker.update') }}">
             @csrf

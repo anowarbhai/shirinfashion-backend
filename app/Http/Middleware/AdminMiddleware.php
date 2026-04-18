@@ -10,12 +10,18 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user()) {
+        if (! $request->user()) {
             return redirect('/admin/login');
         }
 
+        // Load roles with permissions for permission checks
+        $user = $request->user();
+        if (! $user->relationLoaded('roles')) {
+            $user->load('roles.permissions');
+        }
+
         // Check if user is admin OR has any admin role
-        if (!$request->user()->is_admin && !$request->user()->roles()->exists()) {
+        if (! $user->is_admin && ! $user->roles()->exists()) {
             return redirect('/admin/login');
         }
 

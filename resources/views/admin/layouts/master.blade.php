@@ -15,10 +15,16 @@ $canProducts = $user && ($user->isSuperAdmin() || $user->hasPermission('products
 $canOrders = $user && ($user->isSuperAdmin() || $user->hasPermission('orders.view'));
 $canCustomers = $user && ($user->isSuperAdmin() || $user->hasPermission('customers.view'));
 $canMarketing = $user && ($user->isSuperAdmin() || $user->hasPermission('marketing.view'));
-$canPages = $user && ($user->isSuperAdmin() || $user->hasPermission('pages.view'));
+$canCoupons = $user && ($user->isSuperAdmin() || $user->hasPermission('coupons.view'));
+$canSliders = $user && ($user->isSuperAdmin() || $user->hasPermission('sliders.view'));
+$canThemes = $user && ($user->isSuperAdmin() || $user->hasPermission('themes.view'));
 $canUsers = $user && ($user->isSuperAdmin() || $user->hasPermission('users.view'));
-$canRoles = $user && ($user->isSuperAdmin() || $user->hasPermission('roles.view'));
+$canPages = $user && ($user->isSuperAdmin() || $user->hasPermission('pages.view'));
 $canSettings = $user && ($user->isSuperAdmin() || $user->hasPermission('settings.view'));
+$canGeneralSettings = $user && ($user->isSuperAdmin() || $user->hasPermission('settings.general.view'));
+$canFraudSettings = $user && ($user->isSuperAdmin() || $user->hasPermission('settings.fraud.view'));
+$canSmsSettings = $user && ($user->isSuperAdmin() || $user->hasPermission('settings.sms.view'));
+$canRoles = $user && ($user->isSuperAdmin() || $user->hasPermission('roles.view'));
 
 $isProductsMenu = str_contains($currentUrl, '/admin/products') || str_contains($currentUrl, '/admin/categories') || str_contains($currentUrl, '/admin/tags') || str_contains($currentUrl, '/admin/attributes') || str_contains($currentUrl, '/admin/reviews') || str_contains($currentUrl, '/admin/brands') || str_contains($currentUrl, '/admin/settings/product') || str_contains($currentUrl, '/admin/volume-discounts');
 $isSettingsMenu = (str_contains($currentUrl, '/admin/settings') && ! str_contains($currentUrl, '/admin/settings/product') && ! str_contains($currentUrl, '/admin/settings/shipping')) || str_contains($currentUrl, '/admin/roles') || str_contains($currentUrl, '/admin/permissions');
@@ -120,6 +126,7 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                 </a>
                 @endif
 
+                @if($canMarketing || $canCoupons)
                 <div class="relative">
                     <button onclick="toggleMenu('marketing-menu')" class="flex items-center w-full px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ $isMarketingMenu ? 'bg-gray-700 text-rose-400' : '' }}">
                         <i class="fas fa-bullhorn w-6"></i>
@@ -127,6 +134,7 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                         <i class="fas fa-chevron-down ml-auto text-xs transition-transform {{ $isMarketingMenu ? 'rotate-180' : '' }}" id="marketing-menu-arrow"></i>
                     </button>
                     <div id="marketing-menu" class="{{ $isMarketingMenu ? '' : 'hidden' }}">
+                        @if($user && ($user->isSuperAdmin() || $user->hasPermission('marketing.view')))
                         <a href="{{ route('admin.marketing.facebook') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ str_contains($currentUrl, '/admin/marketing/facebook') ? 'text-rose-400 bg-gray-600' : '' }}">
                             <i class="fab fa-facebook w-4 mr-2"></i>
                             Facebook
@@ -139,27 +147,35 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                             <i class="fas fa-search w-4 mr-2"></i>
                             SEO
                         </a>
+                        @endif
+                        @if($canCoupons)
                         <a href="{{ route('admin.coupons.index') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ str_contains($currentUrl, '/admin/coupons') ? 'text-rose-400 bg-gray-600' : '' }}">
                             <i class="fas fa-tag w-4 mr-2"></i>
                             Coupons
                         </a>
+                        @endif
                     </div>
                 </div>
+                @endif
                 
                 <a href="{{ route('admin.customers.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ request()->is('admin/customers*') ? 'bg-gray-700 text-rose-400 border-l-4 border-rose-400' : '' }}">
                     <i class="fas fa-users w-6"></i>
                     <span>Customers</span>
                 </a>
                 
+                @if($canUsers)
                 <a href="{{ route('admin.users.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ request()->is('admin/users*') ? 'bg-gray-700 text-rose-400 border-l-4 border-rose-400' : '' }}">
                     <i class="fas fa-user-cog w-6"></i>
                     <span>Users</span>
                 </a>
+                @endif
                 
+                @if($canSliders)
                 <a href="{{ route('admin.sliders.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ request()->is('admin/sliders*') ? 'bg-gray-700 text-rose-400 border-l-4 border-rose-400' : '' }}">
                     <i class="fas fa-images w-6"></i>
                     <span>Hero Sliders</span>
                 </a>
+                @endif
                 
                 <a href="{{ route('admin.contacts.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ request()->is('admin/contacts*') ? 'bg-gray-700 text-rose-400 border-l-4 border-rose-400' : '' }}">
                     <i class="fas fa-envelope w-6"></i>
@@ -172,11 +188,14 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                     @endif
                 </a>
 
+                @if($canPages)
                 <a href="{{ route('admin.pages.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ request()->is('admin/pages*') ? 'bg-gray-700 text-rose-400 border-l-4 border-rose-400' : '' }}">
                     <i class="fas fa-file-alt w-6"></i>
                     <span>Pages</span>
                 </a>
+                @endif
                 
+                @if($canThemes)
                 <div class="relative">
                     <button onclick="toggleMenu('themes-menu')" class="flex items-center w-full px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ $isThemesMenu ? 'bg-gray-700 text-rose-400' : '' }}">
                         <i class="fas fa-paint-brush w-6"></i>
@@ -202,7 +221,9 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                         </a>
                     </div>
                 </div>
+                @endif
                 
+                @if($canSettings || $canGeneralSettings || $canFraudSettings || $canSmsSettings || $canRoles)
                 <div class="relative">
                     <button onclick="toggleMenu('settings-menu')" class="flex items-center w-full px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ $isSettingsMenu ? 'bg-gray-700 text-rose-400' : '' }}">
                         <i class="fas fa-cog w-6"></i>
@@ -210,32 +231,41 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                         <i class="fas fa-chevron-down ml-auto text-xs transition-transform {{ $isSettingsMenu ? 'rotate-180' : '' }}" id="settings-menu-arrow"></i>
                     </button>
                     <div id="settings-menu" class="{{ $isSettingsMenu ? '' : 'hidden' }}">
+                        @if($user && ($user->isSuperAdmin() || $user->hasPermission('settings.general.view')))
                         <a href="{{ route('admin.settings.general') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ str_contains($currentUrl, '/admin/settings/general') ? 'text-rose-400 bg-gray-600' : '' }}">
                             <i class="fas fa-cog w-4 mr-2"></i>
                             General
                         </a>
+                        @endif
+                        @if($user && ($user->isSuperAdmin() || $user->hasPermission('settings.fraud.view')))
                         <a href="{{ route('admin.settings.fraud-checker') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ str_contains($currentUrl, '/admin/settings/fraud-checker') ? 'text-rose-400 bg-gray-600' : '' }}">
                             <i class="fas fa-shield-alt w-4 mr-2"></i>
                             Fraud Checker
                         </a>
+                        @endif
+                        @if($user && ($user->isSuperAdmin() || $user->hasPermission('settings.sms.view')))
                         <a href="{{ route('admin.sms.index') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ $isSmsMenu ? 'text-rose-400 bg-gray-600' : '' }}">
                             <i class="fas fa-sms w-4 mr-2"></i>
                             SMS Integration
                         </a>
+                        @endif
+                        @if($canRoles)
                         <a href="{{ route('admin.roles.index') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ str_contains($currentUrl, '/admin/roles') ? 'text-rose-400 bg-gray-600' : '' }}">
                             <i class="fas fa-user-shield w-4 mr-2"></i>
                             Roles
                         </a>
-                        @if($canRoles)
+                        @if($user && ($user->isSuperAdmin() || $user->hasPermission('roles.view')))
                         <a href="{{ route('admin.permissions.index') }}" class="flex items-center pl-12 pr-6 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-600 {{ str_contains($currentUrl, '/admin/permissions') ? 'text-rose-400 bg-gray-600' : '' }}">
                             <i class="fas fa-key w-4 mr-2"></i>
                             Permissions
                         </a>
                         @endif
+                        @endif
                     </div>
                 </div>
+                @endif
             </nav>
-            
+
             <div class="fixed bottom-0 w-64 p-4 border-t border-gray-700 bg-gray-800">
                 <form method="POST" action="{{ route('admin.logout') }}">
                     @csrf
@@ -286,17 +316,22 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
             </header>
 
             <div class="p-4 md:p-8">
-                @if(session('success'))
+                @php
+                    $successMsg = session('success');
+                    $errorMsg = session('error');
+                @endphp
+                
+                @if($successMsg)
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 flex items-center">
                         <i class="fas fa-check-circle mr-2"></i>
-                        {{ session('success') }}
+                        {{ $successMsg }}
                     </div>
                 @endif
                 
-                @if(session('error'))
+                @if($errorMsg)
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 flex items-center">
                         <i class="fas fa-exclamation-circle mr-2"></i>
-                        {{ session('error') }}
+                        {{ $errorMsg }}
                     </div>
                 @endif
                 

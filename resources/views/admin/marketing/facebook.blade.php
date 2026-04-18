@@ -17,12 +17,6 @@
             </p>
         </div>
 
-        @if(session('success'))
-            <div class="mx-6 mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-                <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
-            </div>
-        @endif
-
         <form method="POST" action="{{ route('admin.marketing.facebook.update') }}" class="p-6">
             @csrf
             

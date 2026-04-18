@@ -6,22 +6,6 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto">
-    <!-- Success/Error Messages -->
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <ul class="list-disc list-inside">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Profile Information -->
@@ -93,8 +77,13 @@
                 <div class="space-y-4">
                     <div class="flex justify-between items-center py-3 border-b border-gray-100">
                         <span class="text-gray-600">Role</span>
+                        @php
+                            $user->load('roles');
+                            $roleNames = $user->roles->pluck('name')->toArray();
+                            $roleDisplay = !empty($roleNames) ? implode(', ', $roleNames) : ($user->is_admin ? 'Administrator' : 'No Role');
+                        @endphp
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-rose-100 text-rose-800">
-                            <i class="fas fa-shield-alt mr-2"></i>Administrator
+                            <i class="fas fa-shield-alt mr-2"></i>{{ $roleDisplay }}
                         </span>
                     </div>
                     
