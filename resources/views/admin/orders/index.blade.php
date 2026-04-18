@@ -81,14 +81,21 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 </div>
                 <div>
                     <p class="text-sm text-gray-500 mb-1">Order Status</p>
-                    <select id="modalStatusSelect" onchange="updateOrderStatus()" class="w-full border rounded-lg px-3 py-2">
-                        <option value="incomplete">Incomplete</option>
-                        <option value="pending">Pending</option>
-                        <option value="processing">Processing</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
+                    <form id="statusUpdateForm" method="POST" action="" class="flex gap-2">
+                        @csrf
+                        <input type="hidden" name="_method" value="PUT">
+                        <select id="modalStatusSelect" name="status" class="w-full border rounded-lg px-3 py-2">
+                            <option value="incomplete">Incomplete</option>
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <button type="submit" class="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600">
+                            Update
+                        </button>
+                    </form>
                 </div>
             </div>
             
@@ -520,9 +527,12 @@ function viewOrderModal(orderId) {
                 statusSelect.appendChild(option);
             });
             
-            // Set orderId AFTER populating options
+            // Set orderId AFTER populating options and form action
             statusSelect.setAttribute('data-order-id', orderId);
             statusSelect.dataset.orderId = orderId;
+            
+            // Set form action
+            document.getElementById('statusUpdateForm').action = '/admin/orders/' + orderId + '/status';
             
             const itemsContainer = document.getElementById('modalOrderItems');
             itemsContainer.innerHTML = '';
@@ -551,58 +561,9 @@ function closeOrderModal() {
 }
 
 function updateOrderStatus() {
-    const select = document.getElementById('modalStatusSelect');
-    const orderId = select.getAttribute('data-order-id') || select.dataset.orderId;
-    const newStatus = select.value;
-    
-    console.log('Select:', select);
-    console.log('All attributes:', select.attributes);
-    console.log('dataset:', select.dataset);
-    console.log('data-order-id attr:', select.getAttribute('data-order-id'));
-    console.log('Order ID:', orderId);
-    console.log('New status:', newStatus);
-    
-    if (!orderId || orderId === 'undefined' || orderId === '') {
-        alert('Error: Order ID is missing. Order ID: "' + orderId + '"');
-        return;
-    }
-    
-    const url = '/admin/orders/' + orderId + '/status';
-    alert('URL: ' + url + ', Order ID: ' + orderId);
-    
-    // Use method override for PUT since some servers have issues
-    const formData = new FormData();
-    formData.append('_method', 'PUT');
-    formData.append('status', newStatus);
-    formData.append('_token', '{{ csrf_token() }}');
-    
-    fetch(url, {
-        method: 'POST',  // Use POST with _method override
-        body: formData
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        return response.text().then(text => {
-            console.log('Response text:', text);
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                throw new Error('Invalid JSON: ' + text.substring(0, 200));
-            }
-        });
-    })
-    .then(data => {
-        if (data.success) {
-            alert('Order status updated successfully');
-            location.reload();
-        } else {
-            alert(data.message || 'Failed to update status');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to update order status: ' + error.message);
-    });
+    // Now using form submission instead of AJAX
+    // This function is kept for backwards compatibility
+    document.getElementById('statusUpdateForm').submit();
 }
 </script>
 @endsection
