@@ -31,7 +31,9 @@ class RoundRobinService
 
     private function getActiveModerators()
     {
-        return User::where('role', 'moderator')
+        return User::whereHas('roles', function ($query) {
+            $query->where('slug', 'moderator');
+        })
             ->where('is_active', true)
             ->orderBy('id')
             ->get();
