@@ -34,39 +34,39 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <p class="text-sm text-gray-500">Name</p>
-                    <p id="modalCustomerName" class="font-medium flex items-center gap-2">
-                        <span></span>
+                    <div class="flex items-center gap-2">
+                        <span id="modalCustomerName" class="font-medium"></span>
                         <button type="button" onclick="copyToClipboard(document.getElementById('modalCustomerName').textContent)" class="text-gray-400 hover:text-rose-600" title="Copy">
                             <i class="fas fa-copy text-xs"></i>
                         </button>
-                    </p>
+                    </div>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Phone</p>
-                    <p id="modalCustomerPhone" class="font-medium flex items-center gap-2">
-                        <a href="" class="text-blue-600 hover:text-blue-800"></a>
-                        <button type="button" onclick="copyToClipboard(document.getElementById('modalCustomerPhone').textContent)" class="text-gray-400 hover:text-rose-600" title="Copy">
+                    <div class="flex items-center gap-2">
+                        <a href="" id="modalCustomerPhoneLink" class="text-blue-600 hover:text-blue-800 font-medium"></a>
+                        <button type="button" onclick="copyToClipboard(document.getElementById('modalCustomerPhoneLink').textContent)" class="text-gray-400 hover:text-rose-600" title="Copy">
                             <i class="fas fa-copy text-xs"></i>
                         </button>
-                    </p>
+                    </div>
                 </div>
                 <div id="modalEmailContainer" class="hidden">
                     <p class="text-sm text-gray-500">Email</p>
-                    <p id="modalCustomerEmail" class="font-medium flex items-center gap-2">
-                        <span></span>
+                    <div class="flex items-center gap-2">
+                        <span id="modalCustomerEmail" class="font-medium"></span>
                         <button type="button" onclick="copyToClipboard(document.getElementById('modalCustomerEmail').textContent)" class="text-gray-400 hover:text-rose-600" title="Copy">
                             <i class="fas fa-copy text-xs"></i>
                         </button>
-                    </p>
+                    </div>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Shipping Address</p>
-                    <p id="modalShippingAddress" class="font-medium flex items-center gap-2">
-                        <span></span>
+                    <div class="flex items-center gap-2">
+                        <span id="modalShippingAddress" class="font-medium"></span>
                         <button type="button" onclick="copyToClipboard(document.getElementById('modalShippingAddress').textContent)" class="text-gray-400 hover:text-rose-600" title="Copy">
                             <i class="fas fa-copy text-xs"></i>
                         </button>
-                    </p>
+                    </div>
                 </div>
             </div>
             
@@ -520,7 +520,7 @@ function viewOrderModal(orderId) {
             document.getElementById('modalOrderId').textContent = '#' + data.order.id;
             document.getElementById('modalCustomerName').textContent = data.order.customer_name;
             
-            const phoneLink = document.querySelector('#modalCustomerPhone a');
+            const phoneLink = document.getElementById('modalCustomerPhoneLink');
             phoneLink.textContent = data.order.customer_phone;
             phoneLink.href = 'tel:' + data.order.customer_phone;
             
