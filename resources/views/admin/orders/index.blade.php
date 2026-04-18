@@ -555,6 +555,9 @@ function updateOrderStatus() {
     const orderId = select.dataset.orderId;
     const newStatus = select.value;
     
+    console.log('Order ID:', orderId);
+    console.log('New Status:', newStatus);
+    
     fetch(`/admin/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
@@ -574,7 +577,8 @@ function updateOrderStatus() {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Failed to update order status');
+        console.log('Response:', error.response);
+        alert('Failed to update order status: ' + error.message);
     });
 }
 </script>
