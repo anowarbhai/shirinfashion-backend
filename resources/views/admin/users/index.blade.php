@@ -139,7 +139,7 @@
             <!-- Details -->
             <div class="flex items-center justify-between text-sm text-gray-600 mb-3 pb-3 border-b border-gray-100">
                 <span>{{ $user->phone ?? 'N/A' }}</span>
-                <span>{{ $user->join_date ? $user->join_date->format('d M Y') : 'N/A' }}</span>
+                <span>{{ $user->join_date ? \Carbon\Carbon::parse($user->join_date)->format('d M Y') : 'N/A' }}</span>
             </div>
 
             <!-- Status & Actions -->
