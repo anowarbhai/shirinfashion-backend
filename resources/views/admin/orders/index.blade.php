@@ -568,16 +568,17 @@ function updateOrderStatus() {
     }
     
     const url = '/admin/orders/' + orderId + '/status';
-    alert('URL: ' + url + '\nOrder ID: ' + orderId);
-    console.log('Full URL:', url);
+    alert('URL: ' + url + ', Order ID: ' + orderId);
+    
+    // Use method override for PUT since some servers have issues
+    const formData = new FormData();
+    formData.append('_method', 'PUT');
+    formData.append('status', newStatus);
+    formData.append('_token', '{{ csrf_token() }}');
     
     fetch(url, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ status: newStatus })
+        method: 'POST',  // Use POST with _method override
+        body: formData
     })
     .then(response => {
         console.log('Response status:', response.status);
