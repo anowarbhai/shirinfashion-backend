@@ -6,11 +6,6 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto">
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
 
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
         <form method="GET" class="flex flex-wrap items-center gap-2">
