@@ -555,9 +555,6 @@ function updateOrderStatus() {
     const orderId = select.dataset.orderId;
     const newStatus = select.value;
     
-    console.log('Order ID:', orderId);
-    console.log('New Status:', newStatus);
-    
     fetch(`/admin/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
@@ -566,7 +563,17 @@ function updateOrderStatus() {
         },
         body: JSON.stringify({ status: newStatus })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.text().then(text => {
+            console.log('Response text:', text);
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                throw new Error('Invalid JSON: ' + text.substring(0, 200));
+            }
+        });
+    })
     .then(data => {
         if (data.success) {
             alert('Order status updated successfully');
@@ -577,7 +584,6 @@ function updateOrderStatus() {
     })
     .catch(error => {
         console.error('Error:', error);
-        console.log('Response:', error.response);
         alert('Failed to update order status: ' + error.message);
     });
 }
