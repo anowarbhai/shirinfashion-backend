@@ -6,11 +6,6 @@
 
 @section('content')
 <div class="max-w-6xl mx-auto">
-    @if(session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            {{ session('error') }}
-        </div>
-    @endif
 
     <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
         <h2 class="text-xl font-semibold">All Roles</h2>
