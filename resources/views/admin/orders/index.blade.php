@@ -568,6 +568,7 @@ function updateOrderStatus() {
     }
     
     const url = '/admin/orders/' + orderId + '/status';
+    alert('URL: ' + url + '\nOrder ID: ' + orderId);
     console.log('Full URL:', url);
     
     fetch(url, {
