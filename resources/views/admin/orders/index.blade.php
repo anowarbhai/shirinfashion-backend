@@ -240,7 +240,12 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
     <!-- Mobile Card View -->
     <div class="md:hidden space-y-3 p-4">
         @forelse($orders as $order)
-        <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition relative">
+        @php
+        $rate = $order->customer_success_rate ?? -1;
+        $colorClass = $rate >= 70 ? 'bg-green-500' : ($rate >= 40 ? 'bg-yellow-500' : ($rate >= 0 ? 'bg-red-500' : 'bg-gray-400'));
+        $textClass = $rate >= 70 ? 'text-green-600' : ($rate >= 40 ? 'text-yellow-600' : ($rate >= 0 ? 'text-red-600' : 'text-gray-400'));
+        @endphp
+        <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition relative mobile-order-card" data-order-id="{{ $order->id }}">
             <!-- Checkbox -->
             <div class="absolute top-4 left-4">
                 <input type="checkbox" name="ids[]" value="{{ $order->id }}" class="order-checkbox w-4 h-4" onchange="updateBulkDeleteBtn()">
@@ -251,31 +256,32 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 <div>
                     <span class="font-semibold text-gray-800">Order #{{ $order->id }}</span>
                 </div>
-                <span class="px-2 py-1 text-xs font-semibold rounded-full @if($order->status === 'incomplete') bg-red-100 text-red-700 @elseif($order->status === 'pending') bg-yellow-100 text-yellow-700 @elseif($order->status === 'processing') bg-blue-100 text-blue-700 @elseif($order->status === 'shipped') bg-purple-100 text-purple-700 @elseif($order->status === 'delivered') bg-green-100 text-green-700 @else bg-gray-100 text-gray-700 @endif">
+                <span class="mobile-status-badge px-2 py-1 text-xs font-semibold rounded-full @if($order->status === 'incomplete') bg-red-100 text-red-700 @elseif($order->status === 'pending') bg-yellow-100 text-yellow-700 @elseif($order->status === 'processing') bg-blue-100 text-blue-700 @elseif($order->status === 'shipped') bg-purple-100 text-purple-700 @elseif($order->status === 'delivered') bg-green-100 text-green-700 @else bg-gray-100 text-gray-700 @endif">
                     @if($order->status === 'incomplete') ⚠️ Incomplete @else {{ ucfirst($order->status) }} @endif
                 </span>
             </div>
 
             <!-- Customer Info -->
-            <div class="mb-2">
-                <p class="font-medium text-gray-800">{{ $order->customer_name }}</p>
-                <p class="text-sm text-gray-600">{{ $order->customer_phone }}</p>
-                <p class="text-xs text-gray-500 mt-1">{{ \Carbon\Carbon::parse($order->created_at)->setTimezone($timezone)->format($dateFormat . ' ' . $timeFormat) }}</p>
-            </div>
-
-            <!-- Order Details -->
-            <div class="flex items-center justify-between text-sm mb-3 pb-3 border-b border-gray-100">
+            <div class="flex items-start justify-between mb-2">
+                <div>
+                    <p class="font-medium text-gray-800">{{ $order->customer_name }}</p>
+                    <p class="text-sm text-gray-600">{{ $order->customer_phone }}</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ \Carbon\Carbon::parse($order->created_at)->setTimezone($timezone)->format($dateFormat . ' ' . $timeFormat) }}</p>
+                </div>
                 <span class="font-bold text-lg text-gray-800">{{ formatCurrencyAdmin($order->total, $currencySymbol, $currencyPosition) }}</span>
-                <span class="px-2 py-1 text-xs rounded-full @if($order->payment_status === 'paid') bg-green-100 text-green-700 @else bg-yellow-100 text-yellow-700 @endif">
-                    {{ ucfirst($order->payment_status) }}
-                </span>
             </div>
 
-            <!-- Actions -->
+            <!-- Customer Rate & Actions -->
             <div class="flex items-center justify-between">
-                <button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}', {{ $order->id }})" class="bg-rose-100 text-rose-700 px-3 py-2 rounded-lg text-xs font-medium hover:bg-rose-200">
-                    View Rate
-                </button>
+                <div class="flex items-center gap-2 flex-1" id="rateCell-{{ $order->id }}">
+                    <div class="flex-1 h-2 rounded-full bg-gray-200 overflow-hidden">
+                        <div class="h-full {{ $colorClass }}" style="width: {{ max(0, $rate) }}%"></div>
+                    </div>
+                    <span class="text-xs font-medium {{ $textClass }}">{{ $order->customer_success_rate ?? 0 }}%</span>
+                    <button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}', {{ $order->id }})" class="text-xs text-gray-400 hover:text-rose-600">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="viewOrderModal({{ $order->id }})" class="text-blue-600 hover:text-blue-800 p-2 flex items-center gap-1">
                         <i class="fas fa-eye"></i>
@@ -629,15 +635,31 @@ function updateOrderStatus() {
             document.getElementById('orderDetailModal').classList.add('hidden');
             
             // Update status in table without reload
+            // Desktop table
             const statusCell = document.querySelector(`tr[data-order-id="${orderId}"] .order-status`);
             if (statusCell) {
-                statusCell.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
-                statusCell.className = 'px-2 py-1 rounded text-xs font-medium ' + 
+                statusCell.textContent = newStatus === 'incomplete' ? '⚠️ Incomplete' : newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                statusCell.className = 'order-status px-2 py-1 rounded text-xs ' + 
                     (newStatus === 'incomplete' ? 'bg-red-100 text-red-700' : 
                      newStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' : 
                      newStatus === 'processing' ? 'bg-blue-100 text-blue-700' : 
                      newStatus === 'shipped' ? 'bg-purple-100 text-purple-700' : 
                      newStatus === 'delivered' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700');
+            }
+            
+            // Mobile card view
+            const mobileCard = document.querySelector(`.mobile-order-card[data-order-id="${orderId}"]`);
+            if (mobileCard) {
+                const statusBadge = mobileCard.querySelector('.mobile-status-badge');
+                if (statusBadge) {
+                    statusBadge.textContent = newStatus === 'incomplete' ? '⚠️ Incomplete' : newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                    statusBadge.className = 'px-2 py-1 text-xs font-semibold rounded-full ' + 
+                        (newStatus === 'incomplete' ? 'bg-red-100 text-red-700' : 
+                         newStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' : 
+                         newStatus === 'processing' ? 'bg-blue-100 text-blue-700' : 
+                         newStatus === 'shipped' ? 'bg-purple-100 text-purple-700' : 
+                         newStatus === 'delivered' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700');
+                }
             }
         } else {
             alert('Error: ' + response.status);
