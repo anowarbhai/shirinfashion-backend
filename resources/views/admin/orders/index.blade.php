@@ -194,9 +194,12 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                     </td>
                         <td class="px-6 py-4">
                             <div class="flex gap-2">
-                                <button type="button" onclick="viewOrderModal({{ $order->id }})" class="text-blue-600 hover:text-blue-800" title="View">
+                                <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 hover:text-blue-800" title="View">
                                     <i class="fas fa-eye"></i>
-                                </button>
+                                </a>
+                                <a href="{{ route('admin.orders.edit', $order) }}" class="text-green-600 hover:text-green-800" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                                 <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
                                     @csrf
                                     @method('DELETE')
@@ -255,9 +258,9 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                     View Rate
                 </button>
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="viewOrderModal({{ $order->id }})" class="text-blue-600 hover:text-blue-800 p-2">
+                    <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 hover:text-blue-800 p-2">
                         <i class="fas fa-eye"></i>
-                    </button>
+                    </a>
                     <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure?')">
                         @csrf
                         @method('DELETE')
