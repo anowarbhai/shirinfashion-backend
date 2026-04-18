@@ -229,6 +229,10 @@ class OrderController extends BaseController
             'notes' => $validated['notes'] ?? null,
         ]);
 
+        // Assign moderator via round-robin
+        $roundRobin = app(\App\Services\RoundRobinService::class);
+        $assignedModerator = $roundRobin->assignOrder($order);
+
         // Save customer rate data
         $rateData = $this->getCustomerRateData($validated['customer_phone']);
         if ($rateData) {
@@ -481,6 +485,8 @@ class OrderController extends BaseController
             'delivery_method' => $deliveryMethod,
             'notes' => $validated['notes'] ?? null,
         ]);
+
+        // Don't assign moderator here - will be assigned via scheduler after 10 minutes
 
         // Save customer rate data
         $rateData = $this->getCustomerRateData($validated['customer_phone']);

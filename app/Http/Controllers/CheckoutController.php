@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -125,8 +126,10 @@ class CheckoutController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
-        $roundRobin = app(RoundRobinService::class);
-        $roundRobin->assignOrder($order);
+        // Assign moderator via round-robin
+        $roundRobin = app(\App\Services\RoundRobinService::class);
+        $assignedModerator = $roundRobin->assignOrder($order);
+        \Log::info('Checkout: Order ' . $order->id . ' assigned to ' . ($assignedModerator?->name ?? 'NONE'));
 
         foreach ($items as $item) {
             OrderItem::create(array_merge($item, ['order_id' => $order->id]));

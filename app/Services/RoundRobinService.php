@@ -17,13 +17,19 @@ class RoundRobinService
         $moderators = $this->getActiveModerators();
 
         if ($moderators->isEmpty()) {
+            \Log::info('RoundRobin: No moderators found');
             return null;
         }
 
+        \Log::info('RoundRobin: Found ' . $moderators->count() . ' moderators: ' . $moderators->pluck('name')->implode(', '));
+        
         $assignedModerator = $this->getNextModerator($order->status, $moderators);
 
         if ($assignedModerator) {
             $order->update(['moderator_id' => $assignedModerator->id]);
+            \Log::info('RoundRobin: Assigned order ' . $order->id . ' to ' . $assignedModerator->name);
+        } else {
+            \Log::info('RoundRobin: No moderator assigned for order ' . $order->id);
         }
 
         return $assignedModerator;
@@ -34,7 +40,6 @@ class RoundRobinService
         return User::whereHas('roles', function ($query) {
             $query->where('slug', 'moderator');
         })
-            ->where('is_active', true)
             ->orderBy('id')
             ->get();
     }
@@ -49,6 +54,8 @@ class RoundRobinService
         }
 
         $lastModeratorId = $this->getLastAssignedModeratorId($status);
+        
+        \Log::info("RoundRobin: Status=$status, Last moderator ID=$lastModeratorId, Total moderators=$count");
 
         if ($lastModeratorId === null) {
             $nextIndex = 0;
@@ -82,6 +89,8 @@ class RoundRobinService
             ->orderBy('id', 'desc')
             ->first();
 
+        \Log::info("RoundRobin: getLastAssignedModeratorId for status=$status, found=" . ($lastOrder?->moderator_id ?? 'null'));
+        
         return $lastOrder?->moderator_id;
     }
 

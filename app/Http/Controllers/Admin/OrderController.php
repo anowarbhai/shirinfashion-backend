@@ -14,11 +14,14 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
+        $user->load('roles');
+
         $query = Order::with('user', 'moderator');
 
         // Filter for moderators - they only see their assigned orders
-        if (auth()->user()->hasRole('moderator')) {
-            $query->where('moderator_id', auth()->id());
+        if ($user->hasRole('moderator')) {
+            $query->where('moderator_id', $user->id);
         }
 
         if ($request->status) {
@@ -125,8 +128,11 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
+        $user = auth()->user();
+        $user->load('roles');
+
         // Check if moderator can access this order
-        if (auth()->user()->hasRole('moderator') && $order->moderator_id !== auth()->id()) {
+        if ($user->hasRole('moderator') && $order->moderator_id !== $user->id) {
             abort(403, 'You can only view your assigned orders.');
         }
 
@@ -137,8 +143,11 @@ class OrderController extends Controller
 
     public function modal(Order $order)
     {
+        $user = auth()->user();
+        $user->load('roles');
+
         // Check if moderator can access this order
-        if (auth()->user()->hasRole('moderator') && $order->moderator_id !== auth()->id()) {
+        if ($user->hasRole('moderator') && $order->moderator_id !== $user->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -175,8 +184,11 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request, Order $order)
     {
+        $user = auth()->user();
+        $user->load('roles');
+
         // Check if moderator can update this order
-        if (auth()->user()->hasRole('moderator') && $order->moderator_id !== auth()->id()) {
+        if ($user->hasRole('moderator') && $order->moderator_id !== $user->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -206,8 +218,11 @@ class OrderController extends Controller
 
     public function destroy(Order $order)
     {
+        $user = auth()->user();
+        $user->load('roles');
+
         // Check if moderator can delete this order
-        if (auth()->user()->hasRole('moderator') && $order->moderator_id !== auth()->id()) {
+        if ($user->hasRole('moderator') && $order->moderator_id !== $user->id) {
             abort(403, 'You can only delete your assigned orders.');
         }
 

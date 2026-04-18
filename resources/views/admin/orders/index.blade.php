@@ -162,8 +162,11 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer Rate</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer Rate</th>
+                        @if(!auth()->user()->hasRole('moderator'))
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Moderator</th>
+                        @endif
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                 </tr>
             </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -207,13 +210,22 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                                 <div class="h-full {{ $colorClass }}" style="width: {{ max(0, $rate) }}%"></div>
                             </div>
                             <span class="text-xs font-medium {{ $textClass }}">{{ $order->customer_success_rate ?? 0 }}%</span>
-                            <button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}', {{ $order->id }})" class="text-xs text-gray-400 hover:text-rose-600">
+<button type="button" onclick="checkCustomerRate('{{ $order->customer_phone }}', {{ $order->id }})" class="text-xs text-gray-400 hover:text-rose-600">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
                     </td>
-                        <td class="px-6 py-4">
-                            <div class="flex gap-2">
+                    @if(!auth()->user()->hasRole('moderator'))
+                    <td class="px-6 py-4">
+                        @if($order->moderator)
+                            <span class="text-sm text-gray-700">{{ $order->moderator->name }}</span>
+                        @else
+                            <span class="text-sm text-gray-400">-</span>
+                        @endif
+                    </td>
+                    @endif
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
                                 <button type="button" onclick="viewOrderModal({{ $order->id }})" class="text-blue-600 hover:text-blue-800 flex items-center gap-1" title="View">
                                     <i class="fas fa-eye"></i>
                                     <span class="text-xs">VIEW</span>
