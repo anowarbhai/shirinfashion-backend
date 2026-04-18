@@ -555,14 +555,19 @@ function updateOrderStatus() {
     const orderId = select.dataset.orderId;
     const newStatus = select.value;
     
-    if (!orderId) {
-        alert('Error: Order ID is missing. Please reload and try again.');
-        console.log('Select dataset:', select.dataset);
+    console.log('Select dataset:', select.dataset);
+    console.log('Order ID from dataset:', orderId);
+    console.log('New status:', newStatus);
+    
+    if (!orderId || orderId === 'undefined') {
+        alert('Error: Order ID is missing or undefined. Please reload the page and try again. Dataset: ' + JSON.stringify(select.dataset));
         return;
     }
     
-    fetch(`/admin/orders/${orderId}/status`, {
-        method: 'PUT',
+    const url = '/admin/orders/' + orderId + '/status';
+    console.log('URL:', url);
+    
+    fetch(url, {
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
