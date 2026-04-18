@@ -129,11 +129,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('pages/{page}/check-slug', [\App\Http\Controllers\Admin\PageController::class, 'checkSlug'])->name('pages.check-slug-with-id')->middleware('permission:pages.view');
 
         // Pages with action-based permissions
-        Route::get('pages/check-slug', [\App\Http\Controllers\Admin\PageController::class, 'checkSlug'])->name('pages.check-slug')->middleware('permission:pages.view');
-        Route::get('pages/{page}/check-slug', [\App\Http\Controllers\Admin\PageController::class, 'checkSlug'])->name('pages.check-slug-with-id')->middleware('permission:pages.view');
-        Route::get('pages/{page}/builder', [\App\Http\Controllers\Admin\PageController::class, 'builder'])->name('pages.builder')->middleware('permission:pages.edit');
-        Route::post('pages/{page}/builder', [\App\Http\Controllers\Admin\PageController::class, 'builderUpdate'])->name('pages.builder-update')->middleware('permission:pages.edit');
-
         Route::get('pages', [\App\Http\Controllers\Admin\PageController::class, 'index'])->name('pages.index')->middleware('permission:pages.view');
         Route::get('pages/create', [\App\Http\Controllers\Admin\PageController::class, 'create'])->name('pages.create')->middleware('permission:pages.edit');
         Route::post('pages', [\App\Http\Controllers\Admin\PageController::class, 'store'])->name('pages.store')->middleware('permission:pages.edit');
