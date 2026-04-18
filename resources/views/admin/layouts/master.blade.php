@@ -158,11 +158,6 @@ $faviconUrl = $themeSettings->favicon ? asset('storage/'.$themeSettings->favicon
                 </div>
                 @endif
                 
-                <a href="{{ route('admin.customers.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ request()->is('admin/customers*') ? 'bg-gray-700 text-rose-400 border-l-4 border-rose-400' : '' }}">
-                    <i class="fas fa-users w-6"></i>
-                    <span>Customers</span>
-                </a>
-                
                 @if($canUsers)
                 <a href="{{ route('admin.users.index') }}" class="flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition {{ request()->is('admin/users*') ? 'bg-gray-700 text-rose-400 border-l-4 border-rose-400' : '' }}">
                     <i class="fas fa-user-cog w-6"></i>
