@@ -81,21 +81,14 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 </div>
                 <div>
                     <p class="text-sm text-gray-500 mb-1">Order Status</p>
-                    <form id="statusUpdateForm" method="POST" action="" class="flex gap-2">
-                        @csrf
-                        <input type="hidden" name="_method" value="PUT">
-                        <select id="modalStatusSelect" name="status" class="w-full border rounded-lg px-3 py-2">
-                            <option value="incomplete">Incomplete</option>
-                            <option value="pending">Pending</option>
-                            <option value="processing">Processing</option>
-                            <option value="shipped">Shipped</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-                        <button type="submit" class="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600">
-                            Update
-                        </button>
-                    </form>
+                    <select id="modalStatusSelect" onchange="updateOrderStatus()" class="w-full border rounded-lg px-3 py-2">
+                        <option value="incomplete">Incomplete</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
                 </div>
             </div>
             
@@ -531,8 +524,9 @@ function viewOrderModal(orderId) {
             statusSelect.setAttribute('data-order-id', orderId);
             statusSelect.dataset.orderId = orderId;
             
-            // Set form action
-            document.getElementById('statusUpdateForm').action = '/admin/orders/' + orderId + '/status';
+            // Set orderId for status select
+            statusSelect.setAttribute('data-order-id', orderId);
+            statusSelect.dataset.orderId = orderId;
             
             const itemsContainer = document.getElementById('modalOrderItems');
             itemsContainer.innerHTML = '';
@@ -561,9 +555,33 @@ function closeOrderModal() {
 }
 
 function updateOrderStatus() {
-    // Now using form submission instead of AJAX
-    // This function is kept for backwards compatibility
-    document.getElementById('statusUpdateForm').submit();
+    const select = document.getElementById('modalStatusSelect');
+    const orderId = select.dataset.orderId;
+    const newStatus = select.value;
+    
+    // Use Laravel route helper - more reliable
+    const url = "{{ route('admin.orders.update-status', ['order' => ':orderId']) }}".replace(':orderId', orderId);
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-HTTP-Method-Override': 'PUT'
+        },
+        body: JSON.stringify({ status: newStatus })
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Status updated!');
+            location.reload();
+        } else {
+            alert('Error: ' + response.status);
+        }
+    })
+    .catch(err => {
+        alert('Error: ' + err.message);
+    });
 }
 </script>
 @endsection
