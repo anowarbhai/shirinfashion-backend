@@ -44,4 +44,16 @@ class CustomerController extends Controller
         
         return view('admin.customers.show', compact('customer'));
     }
+
+    public function destroy(User $customer)
+    {
+        // Don't allow deletion of users with admin roles
+        if ($customer->is_admin || $customer->hasAnyRole()) {
+            return redirect()->back()->with('error', 'Cannot delete admin or users with roles.');
+        }
+        
+        $customer->delete();
+        
+        return redirect()->route('admin.customers.index')->with('success', 'Customer deleted successfully');
+    }
 }

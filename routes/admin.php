@@ -13,6 +13,38 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
     Route::post('/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');
 
+    // Reassign orders from inactive moderators
+    Route::get('/reassign-inactive-orders', function () {
+        $inactiveModerators = \App\Models\User::whereHas('roles', fn($q) => $q->where('slug', 'moderator'))
+            ->where('status', 'inactive')
+            ->get();
+        
+        if ($inactiveModerators->isEmpty()) {
+            return response()->json(['message' => 'No inactive moderators found']);
+        }
+        
+        $inactiveIds = $inactiveModerators->pluck('id');
+        
+        // Get orders assigned to inactive moderators
+        $orders = \App\Models\Order::whereIn('moderator_id', $inactiveIds)->get();
+        
+        $service = app(\App\Services\RoundRobinService::class);
+        $count = 0;
+        
+        foreach ($orders as $order) {
+            $assigned = $service->assignOrder($order);
+            if ($assigned) {
+                $count++;
+            }
+        }
+        
+        return response()->json([
+            'inactive_moderators' => $inactiveModerators->pluck('name')->toArray(),
+            'total_orders' => $orders->count(),
+            'reassigned' => $count,
+        ]);
+    });
+
     Route::middleware(['auth', 'is_admin'])->group(function () {
         // Users with action-based permissions
         Route::get('users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index')->middleware('permission:users.view');

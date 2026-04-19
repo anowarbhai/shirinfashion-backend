@@ -79,9 +79,20 @@
                         <span class="text-sm font-medium text-gray-900">{{ $customer->orders->count() ?? 0 }}</span>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <a href="{{ route('admin.customers.show', $customer) }}" class="text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-eye"></i> View
-                        </a>
+                        <div class="flex items-center justify-end gap-3">
+                            <a href="{{ route('admin.customers.show', $customer) }}" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            @if(!$customer->is_admin && !$customer->hasAnyRole())
+                            <form method="POST" action="{{ route('admin.customers.destroy', $customer) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this customer?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty
@@ -140,9 +151,20 @@
             <!-- Footer -->
             <div class="flex items-center justify-between">
                 <span class="text-xs text-gray-500">{{ $customer->created_at->format('M d, Y') }}</span>
-                <a href="{{ route('admin.customers.show', $customer) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-2 rounded-lg hover:bg-blue-50">
-                    <i class="fas fa-eye"></i> View
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('admin.customers.show', $customer) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-2 rounded-lg hover:bg-blue-50">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    @if(!$customer->is_admin && !$customer->hasAnyRole())
+                    <form method="POST" action="{{ route('admin.customers.destroy', $customer) }}" class="inline" onsubmit="return confirm('Delete this customer?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium px-3 py-2 rounded-lg hover:bg-red-50">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
+                    @endif
+                </div>
             </div>
         </div>
         @empty

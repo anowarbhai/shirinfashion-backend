@@ -28,6 +28,11 @@ class OrderController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Filter by moderator (admin only)
+        if ($request->moderator && !$user->hasRole('moderator')) {
+            $query->where('moderator_id', $request->moderator);
+        }
+
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('id', 'like', "%{$request->search}%")

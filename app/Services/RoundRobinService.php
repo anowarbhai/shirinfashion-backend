@@ -40,6 +40,10 @@ class RoundRobinService
         return User::whereHas('roles', function ($query) {
             $query->where('slug', 'moderator');
         })
+            ->where(function ($q) {
+                $q->where('status', '!=', 'inactive')
+                  ->orWhereNull('status');
+            })
             ->orderBy('id')
             ->get();
     }

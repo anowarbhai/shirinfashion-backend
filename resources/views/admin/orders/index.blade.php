@@ -134,10 +134,30 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Delivered</option>
                 <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
             </select>
+            @php
+            $moderators = App\Models\User::whereHas('roles', fn($q) => $q->where('slug', 'moderator'))
+                ->where(function ($q) {
+                    $q->where('status', '!=', 'inactive')
+                      ->orWhereNull('status');
+                })
+                ->orderBy('name')
+                ->get();
+            @endphp
+            @if($moderators->count() > 0)
+            <select name="moderator" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500">
+                <option value="">All Moderators</option>
+                @foreach($moderators as $mod)
+                <option value="{{ $mod->id }}" {{ request('moderator') == $mod->id ? 'selected' : '' }}>{{ $mod->name }}</option>
+                @endforeach
+            </select>
+            @endif
             <button type="submit" class="bg-rose-600 text-white px-4 py-2 rounded-lg hover:bg-rose-700"><i class="fas fa-search"></i></button>
         </form>
         
         <div class="flex gap-2">
+            <button type="button" onclick="reassignInactiveOrders()" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 text-sm">
+                <i class="fas fa-user-shield mr-1"></i>Reassign
+            </button>
             <button type="button" id="bulkDeleteBtn" onclick="bulkDelete()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm" disabled>
                 <i class="fas fa-trash mr-1"></i>Delete
             </button>
@@ -146,6 +166,22 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
             </a>
         </div>
     </div>
+
+    <script>
+    function reassignInactiveOrders() {
+        if (!confirm('Reassign orders from inactive moderators to active moderators?')) return;
+        
+        fetch('/admin/reassign-inactive-orders')
+            .then(res => res.json())
+            .then(data => {
+                alert(`Reassigned ${data.reassigned} orders from inactive moderators`);
+                location.reload();
+            })
+            .catch(err => {
+                alert('Error: ' + err.message);
+            });
+    }
+    </script>
     <!-- Desktop Table View -->
     <div class="hidden md:block overflow-x-auto">
         <form id="bulkDeleteForm" method="POST" action="/admin/delete-orders-bulk">
