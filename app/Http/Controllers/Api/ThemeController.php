@@ -11,24 +11,21 @@ class ThemeController extends BaseController
 {
     public function index()
     {
-        // Don't cache marketing settings - get fresh data each time
-        $data = function () {
-            $settings = ThemeSetting::getSettings();
+        $settings = ThemeSetting::getSettings();
 
-            // Get menus
-            $menus = Menu::with('allItems')->where('is_active', true)->get()->map(function ($menu) {
-                return [
-                    'id' => $menu->id,
-                    'name' => $menu->name,
-                    'slug' => $menu->slug,
-                    'location' => $menu->location,
-                    'items' => $this->buildMenuTree($menu->allItems),
-                ];
-            });
-
+        $menus = Menu::with('allItems')->where('is_active', true)->get()->map(function ($menu) {
             return [
-                'logo' => $settings->logo ? asset('storage/'.$settings->logo) : null,
-                'favicon' => $settings->favicon ? asset('storage/'.$settings->favicon) : null,
+                'id' => $menu->id,
+                'name' => $menu->name,
+                'slug' => $menu->slug,
+                'location' => $menu->location,
+                'items' => $this->buildMenuTree($menu->allItems),
+            ];
+        });
+
+        $data = [
+            'logo' => $settings->logo ? asset('storage/'.$settings->logo) : null,
+            'favicon' => $settings->favicon ? asset('storage/'.$settings->favicon) : null,
                 'footer_logo' => $settings->footer_logo ? asset('storage/'.$settings->footer_logo) : null,
                 'company_name' => $settings->company_name,
                 'tagline' => $settings->tagline,
@@ -49,7 +46,7 @@ class ThemeController extends BaseController
                 'header_styles' => ThemeSetting::getHeaderStyles(),
                 'footer_styles' => ThemeSetting::getFooterStyles(),
 
-                // Marketing Settings
+// Marketing Settings
                 'marketing' => [
                     // Facebook/Meta Pixel
                     'facebook_pixel_enabled' => filter_var(config('app.facebook_pixel_enabled', false), FILTER_VALIDATE_BOOLEAN),
@@ -69,8 +66,7 @@ class ThemeController extends BaseController
                     'seo_home_description' => config('app.seo_home_description', 'Discover premium cosmetics and beauty products at Shirin Fashion.'),
                     'seo_home_keywords' => config('app.seo_home_keywords', 'cosmetics, beauty, skincare, makeup'),
                 ],
-            ];
-        }();
+        ];
 
         return $this->success($data);
     }
