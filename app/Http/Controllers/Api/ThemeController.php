@@ -46,25 +46,25 @@ class ThemeController extends BaseController
                 'header_styles' => ThemeSetting::getHeaderStyles(),
                 'footer_styles' => ThemeSetting::getFooterStyles(),
 
-// Marketing Settings
+// Marketing Settings - read directly from env to avoid caching
                 'marketing' => [
                     // Facebook/Meta Pixel
-                    'facebook_pixel_enabled' => filter_var(config('app.facebook_pixel_enabled', false), FILTER_VALIDATE_BOOLEAN),
-                    'facebook_pixel_id' => config('app.facebook_pixel_id', ''),
-                    'facebook_conversion_api_enabled' => filter_var(config('app.facebook_conversion_api_enabled', false), FILTER_VALIDATE_BOOLEAN),
+                    'facebook_pixel_enabled' => filter_var(env('FACEBOOK_PIXEL_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
+                    'facebook_pixel_id' => env('FACEBOOK_PIXEL_ID', ''),
+                    'facebook_conversion_api_enabled' => filter_var(env('FACEBOOK_CONVERSION_API_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
 
                     // Google
-                    'google_tag_manager_enabled' => filter_var(config('app.google_tag_manager_enabled', false), FILTER_VALIDATE_BOOLEAN),
-                    'google_tag_manager_id' => config('app.google_tag_manager_id', ''),
-                    'google_analytics_enabled' => filter_var(config('app.google_analytics_enabled', false), FILTER_VALIDATE_BOOLEAN),
-                    'google_analytics_id' => config('app.google_analytics_id', ''),
-                    'google_ads_enabled' => filter_var(config('app.google_ads_enabled', false), FILTER_VALIDATE_BOOLEAN),
-                    'google_ads_id' => config('app.google_ads_id', ''),
+                    'google_tag_manager_enabled' => filter_var(env('GOOGLE_TAG_MANAGER_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
+                    'google_tag_manager_id' => env('GOOGLE_TAG_MANAGER_ID', ''),
+                    'google_analytics_enabled' => filter_var(env('GOOGLE_ANALYTICS_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
+                    'google_analytics_id' => env('GOOGLE_ANALYTICS_ID', ''),
+                    'google_ads_enabled' => filter_var(env('GOOGLE_ADS_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
+                    'google_ads_id' => env('GOOGLE_ADS_ID', ''),
 
                     // SEO
-                    'seo_home_title' => config('app.seo_home_title', 'Shirin Fashion | Premium Cosmetics & Beauty'),
-                    'seo_home_description' => config('app.seo_home_description', 'Discover premium cosmetics and beauty products at Shirin Fashion.'),
-                    'seo_home_keywords' => config('app.seo_home_keywords', 'cosmetics, beauty, skincare, makeup'),
+                    'seo_home_title' => env('SEO_HOME_TITLE', 'Shirin Fashion | Premium Cosmetics & Beauty'),
+                    'seo_home_description' => env('SEO_HOME_DESCRIPTION', 'Discover premium cosmetics and beauty products at Shirin Fashion.'),
+                    'seo_home_keywords' => env('SEO_HOME_KEYWORDS', 'cosmetics, beauty, skincare, makeup'),
                 ],
         ];
 
