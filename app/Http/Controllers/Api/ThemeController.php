@@ -11,10 +11,8 @@ class ThemeController extends BaseController
 {
     public function index()
     {
-        // Cache theme settings for 1 hour to improve performance
-        $cacheKey = 'theme_settings_api';
-
-        $data = Cache::remember($cacheKey, 3600, function () {
+        // Don't cache marketing settings - get fresh data each time
+        $data = function () {
             $settings = ThemeSetting::getSettings();
 
             // Get menus
@@ -72,7 +70,7 @@ class ThemeController extends BaseController
                     'seo_home_keywords' => config('app.seo_home_keywords', 'cosmetics, beauty, skincare, makeup'),
                 ],
             ];
-        });
+        }();
 
         return $this->success($data);
     }

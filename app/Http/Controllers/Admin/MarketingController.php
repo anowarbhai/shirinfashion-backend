@@ -36,8 +36,9 @@ class MarketingController extends Controller
         $this->saveSetting('facebook_access_token', $validated['facebook_access_token'] ?? '');
         $this->saveSetting('facebook_test_event_code', $validated['facebook_test_event_code'] ?? '');
 
-        // Clear cache
+        // Clear cache and config
         Cache::forget('marketing_settings');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
 
         return redirect()->route('admin.marketing.facebook')->with('success', 'Facebook Conversion API settings updated successfully!');
     }
@@ -72,8 +73,9 @@ class MarketingController extends Controller
         $this->saveSetting('google_ads_enabled', $request->has('google_ads_enabled') ? 'true' : 'false');
         $this->saveSetting('google_ads_id', $validated['google_ads_id'] ?? '');
 
-        // Clear cache
+        // Clear cache and config
         Cache::forget('marketing_settings');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
 
         return redirect()->route('admin.marketing.google')->with('success', 'Google Tag Manager & Analytics settings updated successfully!');
     }
