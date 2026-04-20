@@ -18,7 +18,7 @@ class InjectGTM
             return $response;
         }
 
-        $content = $response->getContent();
+$content = $response->getContent();
 
         // Read directly from .env to avoid caching issues
         $gtmEnabled = filter_var(env('GOOGLE_TAG_MANAGER_ENABLED', false), FILTER_VALIDATE_BOOLEAN);
@@ -27,17 +27,21 @@ class InjectGTM
         $pixelEnabled = filter_var(env('FACEBOOK_PIXEL_ENABLED', false), FILTER_VALIDATE_BOOLEAN);
         $pixelId = env('FACEBOOK_PIXEL_ID', '');
 
-        // Debug log (temporary)
-        \Log::info('InjectGTM Debug', [
-            'gtmEnabled' => $gtmEnabled,
-            'gtmId' => $gtmId,
-            'pixelEnabled' => $pixelEnabled,
-            'pixelId' => $pixelId,
-        ]);
+        // Google Tag Manager - noscript (must be right after body tag)
+        if ($gtmEnabled && $gtmId) {
+            $gtmNoscript = <<<HTML
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={$gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+HTML;
+            // Insert right after <body> tag
+            $content = preg_replace(
+                '/<body[^>]*>/i',
+                '$0' . "\n" . $gtmNoscript . "\n",
+                $content,
+                1
+            );
+        }
 
-        $scripts = '';
-
-        // Google Tag Manager
+        // Google Tag Manager - script (in head)
         if ($gtmEnabled && $gtmId) {
             $gtmScript = <<<HTML
 <!-- Google Tag Manager -->
@@ -48,7 +52,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','{$gtmId}');</script>
 <!-- End Google Tag Manager -->
 HTML;
-            $scripts .= $gtmScript;
+            // Insert at the beginning of head or after <head>
+            if (preg_match('/<head[^>]*>/i', $content, $matches, PREG_OFFSET_CAPTURE)) {
+                $headPos = $matches[0][1] + strlen($matches[0][0]);
+                $content = substr($content, 0, $headPos) . $gtmScript . "\n" . substr($content, $headPos);
+            }
         }
 
         // Facebook Pixel
@@ -69,17 +77,12 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id={$pixelId}&ev=PageView&noscript=1" /></noscript>
 <!-- End Facebook Pixel Code -->
 HTML;
-            $scripts .= $fbScript;
-        }
-
-        if ($scripts) {
-            // Insert after <head> or at beginning of body
-            if (str_contains($content, '<head>')) {
-                $content = str_replace('<head>', '<head>' . $scripts, $content);
-            } elseif (str_contains($content, '<body>')) {
-                $content = str_replace('<body>', '<body>' . $scripts, $content);
+            // Insert at the beginning of head or after <head>
+            if (preg_match('/<head[^>]*>/i', $content, $matches, PREG_OFFSET_CAPTURE)) {
+                $headPos = $matches[0][1] + strlen($matches[0][0]);
+                $content = substr($content, 0, $headPos) . $fbScript . "\n" . substr($content, $headPos);
             } else {
-                $content = $scripts . $content;
+                $content = $fbScript . "\n" . $content;
             }
         }
 
