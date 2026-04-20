@@ -15,10 +15,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'is_admin' => \App\Http\Middleware\AdminMiddleware::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
+            'inject_gtm' => \App\Http\Middleware\InjectGTM::class,
         ]);
         $middleware->api(prepend: [
             \App\Http\Middleware\Cors::class,
             \App\Http\Middleware\LogSlowQueries::class,
+        ]);
+        $middleware->web(prepend: [
+            \App\Http\Middleware\InjectGTM::class,
         ]);
         $middleware->redirectGuestsTo(fn (Request $request) => $request->expectsJson() ? null : '/admin/login');
     })
