@@ -13,7 +13,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
     Route::post('/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');
 
-    // Reassign orders from inactive moderators
+// Reassign orders from inactive moderators
     Route::get('/reassign-inactive-orders', function () {
         $inactiveModerators = \App\Models\User::whereHas('roles', fn($q) => $q->where('slug', 'moderator'))
             ->where('status', 'inactive')
@@ -25,7 +25,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         $inactiveIds = $inactiveModerators->pluck('id');
         
-        // Get orders assigned to inactive moderators
         $orders = \App\Models\Order::whereIn('moderator_id', $inactiveIds)->get();
         
         $service = app(\App\Services\RoundRobinService::class);
@@ -42,6 +41,30 @@ Route::prefix('admin')->name('admin.')->group(function () {
             'inactive_moderators' => $inactiveModerators->pluck('name')->toArray(),
             'total_orders' => $orders->count(),
             'reassigned' => $count,
+        ]);
+    });
+
+    // Assign incomplete orders manually
+    Route::get('/assign-incomplete', function () {
+        $unassigned = \App\Models\Order::where('status', 'incomplete')->whereNull('moderator_id')->get();
+        
+        if ($unassigned->isEmpty()) {
+            return response()->json(['message' => 'No unassigned incomplete orders']);
+        }
+        
+        $service = app(\App\Services\RoundRobinService::class);
+        $count = 0;
+        
+        foreach ($unassigned as $order) {
+            $assigned = $service->assignOrder($order);
+            if ($assigned) {
+                $count++;
+            }
+        }
+        
+        return response()->json([
+            'total_unassigned' => $unassigned->count(),
+            'assigned' => $count,
         ]);
     });
 

@@ -155,6 +155,9 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
         </form>
         
         <div class="flex gap-2">
+            <button type="button" onclick="assignIncomplete()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                <i class="fas fa-clock mr-1"></i>Assign Incomplete
+            </button>
             <button type="button" onclick="reassignInactiveOrders()" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 text-sm">
                 <i class="fas fa-user-shield mr-1"></i>Reassign
             </button>
@@ -168,6 +171,18 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
     </div>
 
     <script>
+    function assignIncomplete() {
+        if (!confirm('Assign all unassigned incomplete orders to moderators?')) return;
+        
+        fetch('/admin/assign-incomplete')
+            .then(res => res.json())
+            .then(data => {
+                alert(data.info ?? 'Assignment complete');
+                location.reload();
+            })
+            .catch(err => alert('Error: ' + err.message));
+    }
+    
     function reassignInactiveOrders() {
         if (!confirm('Reassign orders from inactive moderators to active moderators?')) return;
         
