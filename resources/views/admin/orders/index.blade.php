@@ -128,9 +128,8 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
             <div class="text-gray-600">
                 Total Orders: <span class="font-bold text-gray-900">{{ $orders->total() }}</span>
             </div>
-            <form id="filterForm" method="GET" class="flex items-center gap-3 flex-wrap relative">
+<form id="filterForm" method="GET" class="flex items-center gap-3 flex-wrap relative">
                 <input type="text" name="search" placeholder="Search orders..." value="{{ request('search') }}" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500 w-full md:w-auto">
-            <input type="text" name="search" placeholder="Search orders..." value="{{ request('search') }}" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500 w-full md:w-auto">
             <select name="status" onchange="document.getElementById('filterForm').submit()" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500">
                 <option value="">All Status</option>
                 <option value="incomplete" {{ request('status') == 'incomplete' ? 'selected' : '' }}>Incomplete</option>
