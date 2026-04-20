@@ -123,9 +123,9 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
 
 <div class="bg-white rounded-xl shadow-sm">
     <div class="p-6 border-b border-gray-100 flex justify-between items-center flex-wrap gap-3">
-        <form method="GET" class="flex items-center gap-3 flex-wrap relative">
+        <form id="filterForm" method="GET" class="flex items-center gap-3 flex-wrap relative">
             <input type="text" name="search" placeholder="Search orders..." value="{{ request('search') }}" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500 w-full md:w-auto">
-            <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500">
+            <select name="status" onchange="document.getElementById('filterForm').submit()" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500">
                 <option value="">All Status</option>
                 <option value="incomplete" {{ request('status') == 'incomplete' ? 'selected' : '' }}>Incomplete</option>
                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
@@ -144,7 +144,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                 ->get();
             @endphp
             @if($moderators->count() > 0)
-            <select name="moderator" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500">
+            <select name="moderator" onchange="document.getElementById('filterForm').submit()" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-rose-500">
                 <option value="">All Moderators</option>
                 @foreach($moderators as $mod)
                 <option value="{{ $mod->id }}" {{ request('moderator') == $mod->id ? 'selected' : '' }}>{{ $mod->name }}</option>
