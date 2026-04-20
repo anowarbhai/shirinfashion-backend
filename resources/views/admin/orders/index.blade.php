@@ -288,6 +288,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                                     <i class="fas fa-eye"></i>
                                     <span class="text-xs">VIEW</span>
                                 </button>
+                                @if(Auth::user()->hasPermission('orders.delete'))
                                 <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
                                     @csrf
                                     @method('DELETE')
@@ -296,6 +297,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                                         <span class="text-xs">DELETE</span>
                                     </button>
                                 </form>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -357,6 +359,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                         <i class="fas fa-eye"></i>
                         <span class="text-xs">VIEW</span>
                     </button>
+                    @if(Auth::user()->hasPermission('orders.delete'))
                     <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" class="inline" onsubmit="return confirm('Are you sure?')">
                         @csrf
                         @method('DELETE')
@@ -365,6 +368,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
                             <span class="text-xs">DELETE</span>
                         </button>
                     </form>
+                    @endif
                 </div>
             </div>
         </div>
