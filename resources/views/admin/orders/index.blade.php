@@ -156,7 +156,7 @@ function formatCurrencyAdmin($amount, $symbol, $position) {
         </form>
         
         <div class="flex gap-2">
-            @if(Auth::user()->hasPermission('orders.edit'))
+            @if(!Auth::user()->hasRole('moderator'))
             <button type="button" onclick="assignIncomplete()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
                 <i class="fas fa-clock mr-1"></i>Assign Incomplete
             </button>
