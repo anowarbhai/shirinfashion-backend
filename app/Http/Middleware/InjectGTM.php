@@ -20,12 +20,20 @@ class InjectGTM
 
         $content = $response->getContent();
 
-        // Get settings directly without caching
-        $gtmEnabled = filter_var(config('app.google_tag_manager_enabled', false), FILTER_VALIDATE_BOOLEAN);
-        $gtmId = config('app.google_tag_manager_id', '');
+        // Read directly from .env to avoid caching issues
+        $gtmEnabled = filter_var(env('GOOGLE_TAG_MANAGER_ENABLED', false), FILTER_VALIDATE_BOOLEAN);
+        $gtmId = env('GOOGLE_TAG_MANAGER_ID', '');
 
-        $pixelEnabled = filter_var(config('app.facebook_pixel_enabled', false), FILTER_VALIDATE_BOOLEAN);
-        $pixelId = config('app.facebook_pixel_id', '');
+        $pixelEnabled = filter_var(env('FACEBOOK_PIXEL_ENABLED', false), FILTER_VALIDATE_BOOLEAN);
+        $pixelId = env('FACEBOOK_PIXEL_ID', '');
+
+        // Debug log (temporary)
+        \Log::info('InjectGTM Debug', [
+            'gtmEnabled' => $gtmEnabled,
+            'gtmId' => $gtmId,
+            'pixelEnabled' => $pixelEnabled,
+            'pixelId' => $pixelId,
+        ]);
 
         $scripts = '';
 
